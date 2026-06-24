@@ -13,5 +13,5 @@ public class RadioUI : MonoBehaviour
     public void PlayKlasyczna() { MouseStateManager.Instance.TriggerMusic(); Close(); }
 
     // Heavy Metal → pogarsza nastrój (jak okruszki ale bez jedzenia)
-    public void PlayMetal()     { MouseStateManager.Instance.ApplyNegativeAction(false); Close(); }
+    public void PlayMetal()     { MouseStateManager.Instance.ApplyNegativeAction(); Close(); }
 }

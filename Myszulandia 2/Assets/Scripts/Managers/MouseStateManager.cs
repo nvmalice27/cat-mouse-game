@@ -73,11 +73,30 @@ public class MouseStateManager : MonoBehaviour
         }
         else if (IsCollectible())
         {
-            _collectibleTimer += dt;
-            if (_collectibleTimer >= CollectibleDuration)
+            // Obrazona traktujemy jak łagodny zły stan — eskaluje zamiast wracać do bazy
+            if (_state == MouseState.Obrazona)
             {
-                _collectibleTimer = 0f;
-                ReturnToBase();
+                if (_hunger >= HungerHungryMax)
+                {
+                    _hunger = HungerNormalMax;
+                    EnterBadState(MouseState.Smutna);
+                    return;
+                }
+                _collectibleTimer += dt;
+                if (_collectibleTimer >= BadStateAutoAdvance)
+                {
+                    _collectibleTimer = 0f;
+                    EnterBadState(MouseState.Smutna);
+                }
+            }
+            else
+            {
+                _collectibleTimer += dt;
+                if (_collectibleTimer >= CollectibleDuration)
+                {
+                    _collectibleTimer = 0f;
+                    ReturnToBase();
+                }
             }
         }
     }
@@ -98,7 +117,8 @@ public class MouseStateManager : MonoBehaviour
         if (_state == MouseState.Happy) return;
         if (_hunger >= HungerHungryMax)
         {
-            EnterBadState(MouseState.Smutna);
+            _hunger = HungerNormalMax;  // częściowy reset — brak opieki daje jeden krok gorzej
+            ApplyNegativeAction();
         }
         else
         {
@@ -163,11 +183,11 @@ public class MouseStateManager : MonoBehaviour
         EnterBadState(next);
     }
 
-    public void ApplyNegativeAction(bool isCrumbs)
+    public void ApplyNegativeAction()
     {
         if (IsBadState())                  { AdvanceBadState(); return; }
         if (_state == MouseState.Obrazona) { EnterBadState(MouseState.Smutna); return; }
-        if (IsTemporary())                 { EnterBadState(MouseState.Zlowroga); return; }
+        // Z dowolnego stanu (normalny, głodny, losowy, kolekcjonerski) → Obrażona
         EnterCollectibleState(MouseState.Obrazona);
     }
 
@@ -219,7 +239,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void Feed(bool isGood)
     {
-        if (!isGood) { ApplyNegativeAction(false); return; }
+        if (!isGood) { ApplyNegativeAction(); return; }
         bool wasHungry = _hunger >= HungerNormalMax;
         _hunger = 0f;
         EnterCollectibleState(wasHungry ? MouseState.Szczesliwa : MouseState.Grobol);
