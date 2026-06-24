@@ -21,7 +21,7 @@ public class MouseStateManager : MonoBehaviour
     float _hunger;
     float _dirt;
     MouseState _state = MouseState.Normal;
-    bool[] _unlocked = new bool[18];
+    bool[] _unlocked = new bool[21];
     int   _recoveryCounter;
     float _randomStateTimer;
     float _badStateTimer;
@@ -102,7 +102,7 @@ public class MouseStateManager : MonoBehaviour
     }
 
     public bool IsNormalOrHungry() =>
-        _state == MouseState.Normal || _state == MouseState.Hungry || _state == MouseState.Happy;
+        _state == MouseState.Normal || _state == MouseState.Hungry;
     public bool IsTemporary() =>
         _state == MouseState.Rozochocona || _state == MouseState.Chcaca || _state == MouseState.Zrozpaczona;
     public bool IsBadState() =>
@@ -114,16 +114,19 @@ public class MouseStateManager : MonoBehaviour
 
     void SyncHungerState()
     {
-        if (_state == MouseState.Happy) return;
         if (_hunger >= HungerHungryMax)
         {
-            _hunger = HungerNormalMax;  // częściowy reset — brak opieki daje jeden krok gorzej
+            _hunger = HungerNormalMax;
             ApplyNegativeAction();
         }
         else
         {
             MouseState target = _hunger < HungerNormalMax ? MouseState.Normal : MouseState.Hungry;
-            if (_state != target) SetState(target);
+            if (_state != target)
+            {
+                SetState(target);
+                if (target == MouseState.Hungry) TryUnlock(MouseState.Hungry);
+            }
         }
     }
 
@@ -137,6 +140,7 @@ public class MouseStateManager : MonoBehaviour
         };
         SetState(s);
         _tempStateTimer = 0f;
+        TryUnlock(s);
     }
 
     void OnTempStateExpired()
@@ -160,9 +164,9 @@ public class MouseStateManager : MonoBehaviour
     {
         int idx = bad switch
         {
-            MouseState.Smutna   => 15,
-            MouseState.Zlowroga => 16,
-            MouseState.Sciekla  => 17,
+            MouseState.Smutna   => 14,
+            MouseState.Zlowroga => 15,
+            MouseState.Sciekla  => 16,
             _                   => -1
         };
         if (idx < 0 || idx >= _unlocked.Length) return;
@@ -226,14 +230,7 @@ public class MouseStateManager : MonoBehaviour
                        (_state == MouseState.Rozochocona  && action == 3);
         if (!correct) return;
 
-        SetState(MouseState.Happy);
         _tempStateTimer = 0f;
-        StartCoroutine(ReturnFromHappyAfter(3f));
-    }
-
-    IEnumerator ReturnFromHappyAfter(float delay)
-    {
-        yield return new WaitForSeconds(delay);
         ReturnToBase();
     }
 
@@ -320,10 +317,28 @@ public class MouseStateManager : MonoBehaviour
 
     public static int CollectibleIndex(MouseState s) => s switch
     {
-        MouseState.Smutna   => 15,
-        MouseState.Zlowroga => 16,
-        MouseState.Sciekla  => 17,
-        _ => ((int)s >= 10 && (int)s <= 24) ? (int)s - 10 : -1
+        MouseState.Kochana         => 0,
+        MouseState.Szczesliwa      => 1,
+        MouseState.Grobol          => 2,
+        MouseState.Obrazona        => 3,
+        MouseState.Wakacyjna       => 4,
+        MouseState.Brudna          => 5,
+        MouseState.Makapaka        => 6,
+        MouseState.Pirat           => 7,
+        MouseState.Niewyspana      => 8,
+        MouseState.WesolaPoPobudce => 9,
+        MouseState.Myszkujaca      => 10,
+        MouseState.Tanczaca        => 11,
+        MouseState.Pachnaca        => 12,
+        MouseState.Czonstkowa      => 13,
+        MouseState.Smutna          => 14,
+        MouseState.Zlowroga        => 15,
+        MouseState.Sciekla         => 16,
+        MouseState.Hungry          => 17,
+        MouseState.Rozochocona     => 18,
+        MouseState.Chcaca          => 19,
+        MouseState.Zrozpaczona     => 20,
+        _                          => -1
     };
 
     void SetState(MouseState s)
@@ -360,7 +375,7 @@ public class MouseStateManager : MonoBehaviour
 
         // Pad saved array to current size in case save was from an older version
         var saved = d.unlockedMouseTypes;
-        _unlocked = new bool[18];
+        _unlocked = new bool[21];
         for (int i = 0; i < Mathf.Min(saved.Length, _unlocked.Length); i++)
             _unlocked[i] = saved[i];
 

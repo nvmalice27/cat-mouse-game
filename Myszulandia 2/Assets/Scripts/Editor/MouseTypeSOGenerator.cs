@@ -11,47 +11,54 @@ public static class MouseTypeSOGenerator
         public string cutsceneKey;
     }
 
-    // Order matches CollectibleIndex:
-    //   Indices 0–14: MouseState value - 10  (kolekcjonerskie = 10..24)
-    //   Indices 15–17: złe stany specjalne   (Smutna=30, Zlowroga=31, Sciekla=32)
+    // Order matches CollectibleIndex (see MouseStateManager.CollectibleIndex):
+    //   0–13: kolekcjonerskie (MouseState 10–24, bez Zla)
+    //   14–16: złe stany (Smutna/Zlowroga/Sciekla)
+    //   17–20: stany rozgrywkowe (Hungry/Rozochocona/Chcaca/Zrozpaczona)
     static readonly TypeData[] Types = new TypeData[]
     {
-        // 0 — Kochana (10)
+        // 0 — Kochana
         new() { name = "Kochana",         displayName = "Kochana",          galleryHint = "Zamów myszce kwiaty przez telefon.",              cutsceneKey = "Kochana"         },
-        // 1 — Szczesliwa (11)
+        // 1 — Szczesliwa
         new() { name = "Szczesliwa",      displayName = "Szczęśliwa",       galleryHint = "Nakarm głodną myszkę dobrym jedzeniem.",          cutsceneKey = "Szczesliwa"      },
-        // 2 — Grobol (12)
+        // 2 — Grobol
         new() { name = "Grobol",          displayName = "Grob'ol",          galleryHint = "Nakarm najedzoną myszkę (na zapas).",             cutsceneKey = "Grobol"          },
-        // 3 — Obrazona (13)
+        // 3 — Obrazona
         new() { name = "Obrazona",        displayName = "Obrażona",         galleryHint = "Daj myszce okruszki lub włącz złą muzykę.",       cutsceneKey = "Obrazona"        },
-        // 4 — Wakacyjna (14)
+        // 4 — Wakacyjna
         new() { name = "Wakacyjna",       displayName = "Wakacyjna",        galleryHint = "Zamów wakacje przez telefon.",                    cutsceneKey = "Wakacyjna"       },
-        // 5 — Zla (15)
-        new() { name = "Zla",             displayName = "Zła",              galleryHint = "Odkryj sekretną interakcję...",                  cutsceneKey = "Zla"             },
-        // 6 — Brudna (16)
+        // 5 — Brudna (Zla usunięta)
         new() { name = "Brudna",          displayName = "Brudna",           galleryHint = "Posadź myszkę na rowerze.",                      cutsceneKey = "Brudna"          },
-        // 7 — Makapaka (17)
+        // 6 — Makapaka
         new() { name = "Makapaka",        displayName = "Makapaka",         galleryHint = "Zbierz 3 skarpetki w ciągu jednego dnia.",        cutsceneKey = "Makapaka"        },
-        // 8 — Pirat (18)
+        // 7 — Pirat
         new() { name = "Pirat",           displayName = "Pirat",            galleryHint = "Odkryj sekretną interakcję...",                  cutsceneKey = "Pirat"           },
-        // 9 — Niewyspana (19)
+        // 8 — Niewyspana
         new() { name = "Niewyspana",      displayName = "Niewyspana",       galleryHint = "Ustaw wczesny budzik przez telefon.",             cutsceneKey = "Niewyspana"      },
-        // 10 — WesolaPoPobudce (20)
+        // 9 — WesolaPoPobudce
         new() { name = "WesolaPoPobudce", displayName = "Wesoła po pobudce",galleryHint = "Ustaw normalny budzik przez telefon.",            cutsceneKey = "WesolaPoPobudce" },
-        // 11 — Myszkujaca (21)
+        // 10 — Myszkujaca
         new() { name = "Myszkujaca",      displayName = "Myszkująca",       galleryHint = "Zabierz myszkę do kuchni po raz pierwszy.",       cutsceneKey = "Myszkujaca"      },
-        // 12 — Tanczaca (22)
+        // 11 — Tanczaca
         new() { name = "Tanczaca",        displayName = "Tańcząca",         galleryHint = "Włącz muzykę na radiu.",                         cutsceneKey = "Tanczaca"        },
-        // 13 — Pachnaca (23)
+        // 12 — Pachnaca
         new() { name = "Pachnaca",        displayName = "Pachnąca",         galleryHint = "Umyj brudną myszkę w łazience.",                 cutsceneKey = "Pachnaca"        },
-        // 14 — Czonstkowa (24)
+        // 13 — Czonstkowa
         new() { name = "Czonstkowa",      displayName = "Czonstkowa",       galleryHint = "Zbierz łącznie 100 okruszków.",                  cutsceneKey = "Czonstkowa"      },
-        // 15 — Smutna (30) — zły stan, kolekcjonerski
+        // 14 — Smutna (zły stan)
         new() { name = "Smutna",          displayName = "Smutna",           galleryHint = "Daj okruszki obrażonej myszce.",                 cutsceneKey = "Smutna"          },
-        // 16 — Zlowroga (31) — zły stan, kolekcjonerski
+        // 15 — Zlowroga (zły stan)
         new() { name = "Zlowroga",        displayName = "Złowroga",         galleryHint = "Kontynuuj pogarszanie nastroju smutnej myszki.", cutsceneKey = "Zlowroga"        },
-        // 17 — Sciekla (32) — zły stan, kolekcjonerski
+        // 16 — Sciekla (zły stan)
         new() { name = "Sciekla",         displayName = "Ściekła",          galleryHint = "Doprowadź myszkę do ostateczności.",             cutsceneKey = "Sciekla"         },
+        // 17 — Hungry (stan rozgrywkowy)
+        new() { name = "Glodna",          displayName = "Głodna",           galleryHint = "Pozwól, żeby myszka się porządnie zgłodniała.",  cutsceneKey = "Glodna"          },
+        // 18 — Rozochocona (stan losowy)
+        new() { name = "Rozochocona",     displayName = "Rozochocona",      galleryHint = "Poczekaj — mysz sama wpada w ten nastrój.",      cutsceneKey = "Rozochocona"     },
+        // 19 — Chcaca (stan losowy)
+        new() { name = "Chcaca",          displayName = "Chcąca",           galleryHint = "Poczekaj — mysz sama wpada w ten nastrój.",      cutsceneKey = "Chcaca"          },
+        // 20 — Zrozpaczona (stan losowy)
+        new() { name = "Zrozpaczona",     displayName = "Zrozpaczona",      galleryHint = "Poczekaj — mysz sama wpada w ten nastrój.",      cutsceneKey = "Zrozpaczona"     },
     };
 
     [MenuItem("CatMouse/Generate MouseType Assets")]

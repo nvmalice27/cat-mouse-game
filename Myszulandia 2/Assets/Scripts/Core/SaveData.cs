@@ -8,7 +8,7 @@ public class SaveData
     public float  hunger              = 0f;
     public float  dirt                = 0f;
     public int    mouseStateValue     = 0;
-    public bool[] unlockedMouseTypes  = new bool[18];
+    public bool[] unlockedMouseTypes  = new bool[21];
     public int    crumbsTotal         = 0;
     public int    crumbsInInventory   = 0;
     public int    socksCollected      = 0;
