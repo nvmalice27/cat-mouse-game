@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ItemType { Crumb, Sock, MealGood, MealBad }
+public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket }
 
 [System.Serializable]
 public class InventoryItem
@@ -67,12 +67,30 @@ public class InventoryManager : MonoBehaviour
     }
 
     public void AddMeal(bool isGood) => AddItem(isGood ? ItemType.MealGood : ItemType.MealBad);
+    public void AddRose()            => AddItem(ItemType.Rose);
+    public void AddTicket()          => AddItem(ItemType.Ticket);
 
     public bool TryUseMealOnMouse(bool isGood)
     {
         ItemType t = isGood ? ItemType.MealGood : ItemType.MealBad;
         if (!RemoveItem(t)) return false;
         MouseStateManager.Instance.Feed(isGood);
+        return true;
+    }
+
+    public bool UseRoseOnMouse()
+    {
+        if (!RemoveItem(ItemType.Rose)) return false;
+        MouseStateManager.Instance.TriggerRose();
+        GameEvents.RaiseCutsceneRequested("Date");
+        return true;
+    }
+
+    public bool UseTicketOnMouse()
+    {
+        if (!RemoveItem(ItemType.Ticket)) return false;
+        MouseStateManager.Instance.TriggerVacation();
+        GameEvents.RaiseCutsceneRequested("Vacation");
         return true;
     }
 

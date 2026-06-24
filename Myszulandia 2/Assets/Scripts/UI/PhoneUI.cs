@@ -39,16 +39,14 @@ public class PhoneUI : MonoBehaviour
     public void OrderRose()
     {
         if (!EconomyManager.Instance.TrySpend(40)) return;
-        MouseStateManager.Instance.TriggerRose();
-        GameEvents.RaiseCutsceneRequested("Date");
+        InventoryManager.Instance.AddRose();
         Close();
     }
 
     public void OrderVacation()
     {
         if (!EconomyManager.Instance.TrySpend(300)) return;
-        MouseStateManager.Instance.TriggerVacation();
-        GameEvents.RaiseCutsceneRequested("Vacation");
+        InventoryManager.Instance.AddTicket();
         Close();
     }
 

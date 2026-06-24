@@ -65,6 +65,8 @@ public static class PlaceholderSetup
         var icoCrumb     = MakeSprite("ico_crumb",      new Color(1.00f, 0.85f, 0.00f), 48, 48);
         var icoMealGood  = MakeSprite("ico_meal_good",  new Color(0.20f, 0.80f, 0.20f), 48, 48);
         var icoMealBad   = MakeSprite("ico_meal_bad",   new Color(0.85f, 0.15f, 0.15f), 48, 48);
+        var icoRose      = MakeSprite("ico_rose",       new Color(1.00f, 0.20f, 0.40f), 48, 48);
+        var icoTicket    = MakeSprite("ico_ticket",     new Color(0.20f, 0.60f, 1.00f), 48, 48);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -184,6 +186,8 @@ public static class PlaceholderSetup
                 SetField(invUI, "sockSprite",    icoSock);
                 SetField(invUI, "mealGoodSprite", icoMealGood);
                 SetField(invUI, "mealBadSprite",  icoMealBad);
+                SetField(invUI, "roseSprite",    icoRose);
+                SetField(invUI, "ticketSprite",  icoTicket);
             }
         }
 
