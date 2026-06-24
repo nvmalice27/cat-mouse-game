@@ -106,16 +106,18 @@ public static class RoomSceneSetup
         scaler.referenceResolution = new Vector2(1920, 1080);
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // HUD
-        var hudGO  = MakePanel("HUD", canvasGO.transform, Vector2.up, Vector2.up, Vector2.zero, new Vector2(250, 60));
+        // HUD — lewy górny róg
+        var hudGO  = MakePanelPivot("HUD", canvasGO.transform,
+            new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(10f, -10f), new Vector2(260f, 65f));
         var hudCtrl = hudGO.AddComponent<HUDController>();
-        var coinsT  = MakeTMP("CoinsText", hudGO.transform, "Monety: 10", new Vector2(0, -15));
-        var dayT    = MakeTMP("DayText",   hudGO.transform, "Dzień 1",    new Vector2(0, -40));
+        var coinsT  = MakeTMP("CoinsText", hudGO.transform, "Monety: 10", new Vector2(130f, -18f));
+        var dayT    = MakeTMP("DayText",   hudGO.transform, "Dzień 1",    new Vector2(130f, -47f));
         SetField(hudCtrl, "coinsText", coinsT);
         SetField(hudCtrl, "dayText",   dayT);
 
-        // Inventory Panel
-        var invGO  = MakePanel("InventoryPanel", canvasGO.transform, Vector2.zero, Vector2.zero, Vector2.zero, new Vector2(400, 100));
+        // Inventory Panel — dół, wyśrodkowany
+        var invGO  = MakePanelPivot("InventoryPanel", canvasGO.transform,
+            new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 10f), new Vector2(560f, 100f));
         AddImage(invGO, new Color(0.08f, 0.08f, 0.08f, 0.75f));
         invGO.AddComponent<InventoryUI>();
 
@@ -257,6 +259,20 @@ public static class RoomSceneSetup
         rt.anchorMin  = anchorMin;
         rt.anchorMax  = anchorMax;
         rt.pivot      = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = anchoredPos;
+        rt.sizeDelta  = size;
+        return go;
+    }
+
+    static GameObject MakePanelPivot(string name, Transform parent,
+        Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 anchoredPos, Vector2 size)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var rt        = go.AddComponent<RectTransform>();
+        rt.anchorMin  = anchorMin;
+        rt.anchorMax  = anchorMax;
+        rt.pivot      = pivot;
         rt.anchoredPosition = anchoredPos;
         rt.sizeDelta  = size;
         return go;
