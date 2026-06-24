@@ -27,4 +27,6 @@ public class DoorObject : ClickableObject
         roomDoorMenu.SetActive(false);
         GameManager.Instance.NavigateTo("Bathroom");
     }
+
+    public void CloseDoorMenu() => roomDoorMenu?.SetActive(false);
 }
