@@ -50,4 +50,7 @@ public class GameManager : MonoBehaviour
     void OnGameOver() => DayNightManager.Instance.ResetDay();
 
     public void NavigateTo(string sceneName) => SceneManager.LoadScene(sceneName);
+
+    public void NavigateToGallery()  => SceneManager.LoadScene("Gallery");
+    public void NavigateToMainMenu() => SceneManager.LoadScene("MainMenu");
 }
