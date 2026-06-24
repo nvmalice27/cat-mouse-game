@@ -12,11 +12,30 @@ public class KitchenScene : MonoBehaviour
 
     readonly List<int> _collected = new();
     bool _cooking;
+    bool _cookedToday;
+
+    void OnEnable()  => GameEvents.OnNewDayStarted += OnNewDay;
+    void OnDisable() => GameEvents.OnNewDayStarted -= OnNewDay;
 
     void Start()
     {
         if (cookButton == null) { Debug.LogError("KitchenScene: cookButton nie jest przypisany!"); return; }
         cookButton.SetActive(false);
+        if (_cookedToday) DisableAllSources();
+    }
+
+    void OnNewDay()
+    {
+        _cookedToday = false;
+        _cooking     = false;
+        _collected.Clear();
+        foreach (var src in ingredientSources) src.SetActive(true);
+        if (cookButton != null) cookButton.SetActive(false);
+    }
+
+    void DisableAllSources()
+    {
+        foreach (var src in ingredientSources) src.SetActive(false);
     }
 
     public void CollectIngredient(int sourceIndex)
@@ -42,7 +61,8 @@ public class KitchenScene : MonoBehaviour
         yield return new WaitForSeconds(cookDuration);
         InventoryManager.Instance.AddMeal(true);
         _collected.Clear();
-        foreach (var src in ingredientSources) src.SetActive(true);
-        _cooking = false;
+        _cooking     = false;
+        _cookedToday = true;
+        DisableAllSources();
     }
 }
