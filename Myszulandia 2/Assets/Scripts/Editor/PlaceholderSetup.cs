@@ -9,6 +9,31 @@ public static class PlaceholderSetup
     const string PlaceholderDir    = "Assets/Art/Placeholders";
     const string PlaceholderDirAbs = "Assets/Art/Placeholders";
 
+    [MenuItem("CatMouse/Add Camera")]
+    public static void AddCamera()
+    {
+        if (Object.FindObjectOfType<Camera>() != null)
+        {
+            Debug.Log("Kamera już istnieje na scenie.");
+            return;
+        }
+        var camGO = new GameObject("Main Camera");
+        camGO.tag = "MainCamera";
+        var cam = camGO.AddComponent<Camera>();
+        cam.orthographic     = true;
+        cam.orthographicSize = 5f;
+        cam.clearFlags       = CameraClearFlags.SolidColor;
+        cam.backgroundColor  = new Color(0.2f, 0.2f, 0.2f);
+        cam.depth            = -1;
+        camGO.AddComponent<AudioListener>();
+        camGO.transform.position = new Vector3(0, 0, -10);
+
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+        Debug.Log("✓ Kamera dodana!");
+    }
+
     [MenuItem("CatMouse/Setup Placeholders + InventoryUI")]
     public static void Setup()
     {
