@@ -9,6 +9,12 @@ public static class KitchenSceneSetup
     [MenuItem("CatMouse/Setup Kitchen Scene")]
     public static void Setup()
     {
+        if (Object.FindObjectOfType<KitchenScene>() != null)
+        {
+            Debug.LogWarning("Kitchen scene już zbudowana! Usuń obiekty sceny i spróbuj ponownie.");
+            return;
+        }
+
         // EventSystem
         if (Object.FindObjectOfType<EventSystem>() == null)
         {
@@ -111,14 +117,15 @@ public static class KitchenSceneSetup
         var kitchenScene = kitchenMgrGO.AddComponent<KitchenScene>();
         SetIntField(kitchenScene, "ingredientsNeeded", 3);
 
-        // Wire ingredientSources array
-        var kitchenSO = new SerializedObject(kitchenScene);
+        // Wire all KitchenScene fields in one SerializedObject pass
+        var kitchenSO   = new SerializedObject(kitchenScene);
         var sourcesProp = kitchenSO.FindProperty("ingredientSources");
         sourcesProp.arraySize = 3;
         for (int i = 0; i < 3; i++)
             sourcesProp.GetArrayElementAtIndex(i).objectReferenceValue = ingredientGOs[i];
-        SetField(kitchenScene, "potAnimator", potAnim);
+        kitchenSO.FindProperty("potAnimator").objectReferenceValue = potAnim;
         kitchenSO.ApplyModifiedProperties();
+        EditorUtility.SetDirty(kitchenScene);
 
         // Wire IngredientSource.kitchen references
         for (int i = 0; i < 3; i++)
@@ -164,8 +171,10 @@ public static class KitchenSceneSetup
                 as UnityEngine.Events.UnityAction;
             UnityEditor.Events.UnityEventTools.AddVoidPersistentListener(cookBtn.onClick, action);
         }
-        cookBtnPanelGO.SetActive(false);
+        // Assign reference BEFORE deactivating so Unity serializes it correctly
         SetField(kitchenScene, "cookButton", cookBtnPanelGO);
+        EditorUtility.SetDirty(kitchenScene);
+        cookBtnPanelGO.SetActive(false);
 
         // Action Menu Panel (for mouse interactions)
         var actionPanelGO = MakePanel("ActionMenuPanel", canvasGO.transform,

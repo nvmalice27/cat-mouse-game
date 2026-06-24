@@ -13,14 +13,18 @@ public class KitchenScene : MonoBehaviour
     readonly List<int> _collected = new();
     bool _cooking;
 
-    void Start() => cookButton.SetActive(false);
+    void Start()
+    {
+        if (cookButton == null) { Debug.LogError("KitchenScene: cookButton nie jest przypisany!"); return; }
+        cookButton.SetActive(false);
+    }
 
     public void CollectIngredient(int sourceIndex)
     {
         if (_cooking || _collected.Contains(sourceIndex)) return;
         _collected.Add(sourceIndex);
         ingredientSources[sourceIndex].SetActive(false);
-        if (_collected.Count >= ingredientsNeeded)
+        if (_collected.Count >= ingredientsNeeded && cookButton != null)
             cookButton.SetActive(true);
     }
 
@@ -28,7 +32,7 @@ public class KitchenScene : MonoBehaviour
     {
         if (_cooking || _collected.Count < ingredientsNeeded) return;
         _cooking = true;
-        cookButton.SetActive(false);
+        if (cookButton != null) cookButton.SetActive(false);
         if (potAnimator != null) potAnimator.SetTrigger("Cook");
         StartCoroutine(FinishCooking());
     }
