@@ -40,19 +40,25 @@ public static class PlaceholderSetup
         EnsureFolder("Assets/Art", "Placeholders");
 
         // ── sprites for scene objects ──────────────────────────────────────
-        var sprBackground = MakeSprite("bg",         new Color(0.53f, 0.81f, 0.98f), 1920, 1080);
-        var sprCat        = MakeSprite("cat",        new Color(1.00f, 0.55f, 0.00f),   80,  80);
-        var sprMouse      = MakeSprite("mouse",      new Color(0.70f, 0.70f, 0.70f),   60,  60);
-        var sprDirty      = MakeSprite("dirty",      new Color(0.40f, 0.25f, 0.05f),   60,  60);
-        var sprBed        = MakeSprite("bed",        new Color(0.55f, 0.27f, 0.07f),  120,  70);
-        var sprBedMade    = MakeSprite("bed_made",   new Color(0.80f, 0.60f, 0.40f),  120,  70);
-        var sprPillow     = MakeSprite("pillow",     new Color(0.96f, 0.87f, 0.70f),   60,  40);
-        var sprBike       = MakeSprite("bike",       new Color(0.80f, 0.10f, 0.10f),  100,  70);
-        var sprRadio      = MakeSprite("radio",      new Color(0.50f, 0.00f, 0.50f),   80,  50);
-        var sprPhone      = MakeSprite("phone",      new Color(0.20f, 0.20f, 0.20f),   50,  90);
-        var sprDoor       = MakeSprite("door",       new Color(0.29f, 0.18f, 0.10f),   70, 120);
-        var sprCrumb      = MakeSprite("crumb",      new Color(1.00f, 0.85f, 0.00f),   24,  24);
-        var sprSock       = MakeSprite("sock",       new Color(1.00f, 0.71f, 0.76f),   30,  50);
+        var sprBackground  = MakeSprite("bg",           new Color(0.53f, 0.81f, 0.98f), 1920, 1080);
+        var sprCat         = MakeSprite("cat",          new Color(1.00f, 0.55f, 0.00f),   80,  80);
+        var sprMouse       = MakeSprite("mouse",        new Color(0.70f, 0.70f, 0.70f),   60,  60);
+        var sprDirty       = MakeSprite("dirty",        new Color(0.40f, 0.25f, 0.05f),   60,  60);
+        var sprBed         = MakeSprite("bed",          new Color(0.55f, 0.27f, 0.07f),  120,  70);
+        var sprBedMade     = MakeSprite("bed_made",     new Color(0.80f, 0.60f, 0.40f),  120,  70);
+        var sprPillow      = MakeSprite("pillow",       new Color(0.96f, 0.87f, 0.70f),   60,  40);
+        var sprBike        = MakeSprite("bike",         new Color(0.80f, 0.10f, 0.10f),  100,  70);
+        var sprRadio       = MakeSprite("radio",        new Color(0.50f, 0.00f, 0.50f),   80,  50);
+        var sprPhone       = MakeSprite("phone",        new Color(0.20f, 0.20f, 0.20f),   50,  90);
+        var sprDoor        = MakeSprite("door",         new Color(0.29f, 0.18f, 0.10f),   70, 120);
+        var sprCrumb       = MakeSprite("crumb",        new Color(1.00f, 0.85f, 0.00f),   24,  24);
+        var sprSock        = MakeSprite("sock",         new Color(1.00f, 0.71f, 0.76f),   30,  50);
+        // kitchen
+        var sprPot         = MakeSprite("pot",          new Color(0.25f, 0.25f, 0.28f),   90,  80);
+        var sprIngredient  = MakeSprite("ingredient",   new Color(0.20f, 0.70f, 0.20f),   50,  50);
+        // bathroom
+        var sprDirtySpot   = MakeSprite("dirty_spot",  new Color(0.40f, 0.22f, 0.04f),   48,  48);
+        var sprSponge      = MakeSprite("sponge",       new Color(1.00f, 0.90f, 0.30f),   40,  40);
 
         // ── sprites for inventory icons (UI) ───────────────────────────────
         var icoSock      = MakeSprite("ico_sock",       new Color(1.00f, 0.71f, 0.76f), 48, 48);
@@ -94,6 +100,14 @@ public static class PlaceholderSetup
 
         for (int i = 1; i <= 3; i++) AssignSprite($"Crumb_{i}", sprCrumb);
         for (int i = 1; i <= 3; i++) AssignSprite($"Sock_{i}",  sprSock);
+
+        // ── kitchen objects ────────────────────────────────────────────────
+        AssignSprite("Pot", sprPot);
+        for (int i = 1; i <= 3; i++) AssignSprite($"Ingredient_{i}", sprIngredient);
+
+        // ── bathroom objects ───────────────────────────────────────────────
+        for (int i = 1; i <= 5; i++) AssignSprite($"DirtySpot_{i}", sprDirtySpot);
+        AssignSprite("SpongeCursor", sprSponge);
 
         // ── fix all zero-size BoxCollider2Ds ───────────────────────────────
         FixAllColliders();
