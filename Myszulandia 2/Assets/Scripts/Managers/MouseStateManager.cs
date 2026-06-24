@@ -21,7 +21,7 @@ public class MouseStateManager : MonoBehaviour
     float _hunger;
     float _dirt;
     MouseState _state = MouseState.Normal;
-    bool[] _unlocked = new bool[15];
+    bool[] _unlocked = new bool[18];
     int   _recoveryCounter;
     float _randomStateTimer;
     float _badStateTimer;
@@ -132,7 +132,23 @@ public class MouseStateManager : MonoBehaviour
         SetState(bad);
         _badStateTimer   = 0f;
         _recoveryCounter = 0;
+        TryUnlockBadState(bad);
         if (bad == MouseState.ScieklaII) TriggerGameOver();
+    }
+
+    void TryUnlockBadState(MouseState bad)
+    {
+        int idx = bad switch
+        {
+            MouseState.Smutna   => 15,
+            MouseState.Zlowroga => 16,
+            MouseState.Sciekla  => 17,
+            _                   => -1
+        };
+        if (idx < 0 || idx >= _unlocked.Length) return;
+        bool isFirst = !_unlocked[idx];
+        _unlocked[idx] = true;
+        GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
     }
 
     void AdvanceBadState()
@@ -149,9 +165,10 @@ public class MouseStateManager : MonoBehaviour
 
     public void ApplyNegativeAction(bool isCrumbs)
     {
-        if (IsTemporary())  { EnterBadState(MouseState.Zlowroga); return; }
-        if (IsBadState())   { AdvanceBadState(); return; }
-        EnterCollectibleState(isCrumbs ? MouseState.Zla : MouseState.Obrazona);
+        if (IsBadState())                  { AdvanceBadState(); return; }
+        if (_state == MouseState.Obrazona) { EnterBadState(MouseState.Smutna); return; }
+        if (IsTemporary())                 { EnterBadState(MouseState.Zlowroga); return; }
+        EnterCollectibleState(MouseState.Obrazona);
     }
 
     public void ApplyDirectAction(int action)
@@ -270,7 +287,7 @@ public class MouseStateManager : MonoBehaviour
     void TryUnlock(MouseState s)
     {
         int idx = CollectibleIndex(s);
-        if (idx < 0 || idx >= 15) return;
+        if (idx < 0 || idx >= _unlocked.Length) return;
         bool isFirst = !_unlocked[idx];
         _unlocked[idx] = true;
         GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
@@ -281,11 +298,13 @@ public class MouseStateManager : MonoBehaviour
         SetState(_hunger < HungerNormalMax ? MouseState.Normal : MouseState.Hungry);
     }
 
-    public static int CollectibleIndex(MouseState s)
+    public static int CollectibleIndex(MouseState s) => s switch
     {
-        int v = (int)s;
-        return (v >= 10 && v <= 24) ? v - 10 : -1;
-    }
+        MouseState.Smutna   => 15,
+        MouseState.Zlowroga => 16,
+        MouseState.Sciekla  => 17,
+        _ => ((int)s >= 10 && (int)s <= 24) ? (int)s - 10 : -1
+    };
 
     void SetState(MouseState s)
     {
@@ -315,10 +334,16 @@ public class MouseStateManager : MonoBehaviour
 
     public void ApplySaveData(SaveData d)
     {
-        _hunger   = d.hunger;
-        _dirt     = d.dirt;
-        _state    = (MouseState)d.mouseStateValue;
-        _unlocked = (bool[])d.unlockedMouseTypes.Clone();
+        _hunger = d.hunger;
+        _dirt   = d.dirt;
+        _state  = (MouseState)d.mouseStateValue;
+
+        // Pad saved array to current size in case save was from an older version
+        var saved = d.unlockedMouseTypes;
+        _unlocked = new bool[18];
+        for (int i = 0; i < Mathf.Min(saved.Length, _unlocked.Length); i++)
+            _unlocked[i] = saved[i];
+
         GameEvents.RaiseMouseStateChanged(_state);
     }
 
