@@ -13,8 +13,8 @@ public class CutsceneManager : MonoBehaviour
 
     string _currentKey;
 
-    void OnEnable()  => GameEvents.OnCutsceneRequested += Play;
-    void OnDisable() => GameEvents.OnCutsceneRequested -= Play;
+    void Awake()     => GameEvents.OnCutsceneRequested += Play;
+    void OnDestroy() => GameEvents.OnCutsceneRequested -= Play;
 
     void Play(string key)
     {
