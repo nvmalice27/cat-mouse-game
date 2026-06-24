@@ -134,9 +134,15 @@ public static class UILayoutFix
 
     static void FixCutscenePanelInternal()
     {
-        var go = GameObject.Find("CutscenePanel");
-        if (go == null) { Debug.LogWarning("Nie znaleziono CutscenePanel."); return; }
+        // GameObject.Find ignoruje nieaktywne — szukamy przez komponent
+        var cm = Object.FindObjectsOfType<CutsceneManager>(true);
+        if (cm == null || cm.Length == 0)
+        {
+            Debug.LogWarning("Nie znaleziono CutsceneManager na scenie.");
+            return;
+        }
 
+        var go = cm[0].gameObject;
         go.SetActive(true);
 
         var cg = go.GetComponent<CanvasGroup>();
@@ -146,7 +152,7 @@ public static class UILayoutFix
         cg.interactable   = false;
 
         EditorUtility.SetDirty(go);
-        Debug.Log($"  CutscenePanel: aktywny + CanvasGroup(alpha=0)");
+        Debug.Log($"  CutscenePanel ({go.name}): aktywny + CanvasGroup(alpha=0)");
     }
 
     // ── Add Nav Buttons ───────────────────────────────────────────────────────
