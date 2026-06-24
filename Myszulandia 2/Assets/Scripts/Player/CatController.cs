@@ -6,9 +6,10 @@ public class CatController : MonoBehaviour
     [SerializeField] float          moveSpeed = 3f;
     [SerializeField] SpriteRenderer spriteRenderer;
 
-    Rigidbody2D _rb;
-    Vector2     _target;
-    bool        _moving;
+    Rigidbody2D    _rb;
+    Vector2        _target;
+    bool           _moving;
+    ClickableObject _pendingInteraction;
 
     void Awake()
     {
@@ -22,22 +23,40 @@ public class CatController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            Vector3 w = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            _target   = new Vector2(w.x, w.y);
-            _moving   = true;
+            Vector3 w          = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            _target            = new Vector2(w.x, w.y);
+            _moving            = true;
+            _pendingInteraction = null;
         }
+    }
+
+    // Called by ClickableObject — cat walks to target then interacts
+    public void WalkThenInteract(ClickableObject target)
+    {
+        _target             = target.transform.position;
+        _moving             = true;
+        _pendingInteraction = target;
     }
 
     void FixedUpdate()
     {
         if (!_moving) { _rb.velocity = Vector2.zero; return; }
+
         Vector2 dir = _target - (Vector2)transform.position;
-        if (dir.magnitude < 0.08f)
+        float   threshold = _pendingInteraction != null ? 1.2f : 0.08f;
+
+        if (dir.magnitude < threshold)
         {
             _moving      = false;
             _rb.velocity = Vector2.zero;
+            if (_pendingInteraction != null)
+            {
+                _pendingInteraction.Interact();
+                _pendingInteraction = null;
+            }
             return;
         }
+
         _rb.velocity = dir.normalized * moveSpeed;
         if (spriteRenderer != null) spriteRenderer.flipX = dir.x < 0;
     }
