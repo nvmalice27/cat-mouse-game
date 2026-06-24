@@ -4,7 +4,7 @@ public class MouseController : MonoBehaviour
 {
     [SerializeField] SpriteRenderer  spriteRenderer;
     [SerializeField] Animator        animator;
-    [SerializeField] MouseTypeSO[]   mouseTypes;     // 15 slotów, index 0–14
+    [SerializeField] MouseTypeSO[]   mouseTypes;
     [SerializeField] Sprite          normalSprite;
     [SerializeField] Sprite          hungrySprite;
     [SerializeField] SpriteRenderer  dirtyOverlay;
@@ -35,5 +35,6 @@ public class MouseController : MonoBehaviour
             dirtyOverlay.gameObject.SetActive(MouseStateManager.Instance.IsDirty());
     }
 
-    void OnMouseDown() => actionMenu?.Toggle();
+    // Called by CatController on left-click hit
+    public void HandleClick() => actionMenu?.Toggle();
 }
