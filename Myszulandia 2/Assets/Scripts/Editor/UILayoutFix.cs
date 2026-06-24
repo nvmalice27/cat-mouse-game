@@ -106,12 +106,9 @@ public static class UILayoutFix
         var canvas = Object.FindObjectOfType<Canvas>();
         if (canvas == null) { Debug.LogWarning("Brak Canvas na scenie."); return; }
 
-        // Nie dodawaj jeśli już są
-        if (GameObject.Find("NavButtons") != null)
-        {
-            Debug.Log("NavButtons już istnieją na tej scenie.");
-            return;
-        }
+        // Usuń stare (mogły być wired do GameManager — nieprawidłowe)
+        var existing = GameObject.Find("NavButtons");
+        if (existing != null) Object.DestroyImmediate(existing);
 
         // Kontener — prawy górny róg
         var navGO = new GameObject("NavButtons");
@@ -123,16 +120,17 @@ public static class UILayoutFix
         navRT.anchoredPosition = new Vector2(-10f, -10f);
         navRT.sizeDelta        = new Vector2(230f, 44f);
 
-        var mgr = Object.FindObjectOfType<GameManager>();
+        // NavHelper czyta singleton dynamicznie — nie trzyma direct reference do sceny
+        var helper = navGO.AddComponent<NavHelper>();
 
         MakeNavBtn("BtnGaleria", navGO.transform, new Vector2(-120f, 0f), "Galeria",
-            mgr, "NavigateToGallery");
-        MakeNavBtn("BtnMenu",    navGO.transform, new Vector2( 0f,   0f), "Menu",
-            mgr, "NavigateToMainMenu");
+            helper, "GoToGallery");
+        MakeNavBtn("BtnMenu",    navGO.transform, new Vector2(  0f,  0f), "Menu",
+            helper, "GoToMainMenu");
 
         EditorUtility.SetDirty(navGO);
         SaveScene();
-        Debug.Log("✓ Przyciski nawigacji dodane (prawy górny róg).");
+        Debug.Log("✓ Przyciski nawigacji dodane z NavHelper (prawy górny róg).");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
