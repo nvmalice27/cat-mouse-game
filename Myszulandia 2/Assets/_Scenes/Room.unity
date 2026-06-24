@@ -153,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b884eb72acd31c547a5a736f1adfd441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   visuals: {fileID: 0}
 --- !u!61 &47045582
 BoxCollider2D:
@@ -198,7 +197,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.24, y: 0.24}
   m_EdgeRadius: 0
 --- !u!212 &47045583
 SpriteRenderer:
@@ -298,7 +297,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b884eb72acd31c547a5a736f1adfd441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   visuals: {fileID: 0}
 --- !u!61 &50106998
 BoxCollider2D:
@@ -343,7 +341,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.24, y: 0.24}
   m_EdgeRadius: 0
 --- !u!212 &50106999
 SpriteRenderer:
@@ -1499,7 +1497,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.3, y: 0.5}
   m_EdgeRadius: 0
 --- !u!212 &232987313
 SpriteRenderer:
@@ -2463,7 +2461,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b884eb72acd31c547a5a736f1adfd441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   visuals: {fileID: 0}
 --- !u!61 &400543473
 BoxCollider2D:
@@ -2508,7 +2505,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.24, y: 0.24}
   m_EdgeRadius: 0
 --- !u!212 &400543474
 SpriteRenderer:
@@ -2835,7 +2832,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef9533b306d27854eace8b034361e58f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   confirmPanel: {fileID: 1341326622}
 --- !u!61 &527453006
 BoxCollider2D:
@@ -2880,7 +2876,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.6, y: 0.4}
   m_EdgeRadius: 0
 --- !u!212 &527453007
 SpriteRenderer:
@@ -3248,7 +3244,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53480189cc89fd641ad2b8915c1f53e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   audioSource: {fileID: 570936595}
 --- !u!82 &570936595
 AudioSource:
@@ -3389,7 +3384,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.8, y: 0.5}
   m_EdgeRadius: 0
 --- !u!212 &570936597
 SpriteRenderer:
@@ -3675,7 +3670,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e4f6bcc318194a4fb507916d11b67db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   roomDoorMenu: {fileID: 1483761313}
   isInRoom: 1
 --- !u!61 &768578273
@@ -3721,7 +3715,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.7, y: 1.2}
   m_EdgeRadius: 0
 --- !u!212 &768578274
 SpriteRenderer:
@@ -4827,7 +4821,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.3, y: 0.5}
   m_EdgeRadius: 0
 --- !u!212 &990236747
 SpriteRenderer:
@@ -5637,7 +5631,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.3, y: 0.5}
   m_EdgeRadius: 0
 --- !u!212 &1259111489
 SpriteRenderer:
@@ -5737,7 +5731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f40d39b3bc76e944869a4680a0aac09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   phoneUI: {fileID: 337444097}
 --- !u!61 &1262934562
 BoxCollider2D:
@@ -5782,7 +5775,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.5, y: 0.9}
   m_EdgeRadius: 0
 --- !u!212 &1262934563
 SpriteRenderer:
@@ -6078,7 +6071,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed9abb338917174f96cb2d991c4bf07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
 --- !u!61 &1324904744
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6122,7 +6114,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 1, y: 0.7}
   m_EdgeRadius: 0
 --- !u!212 &1324904745
 SpriteRenderer:
@@ -7609,7 +7601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce215fade97a11948b2c929e550feec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactRadius: 2
   sr: {fileID: 1654265179}
   madeSprite: {fileID: 21300000, guid: 388b0ae52d8f2f14189cda4488e847c8, type: 3}
   unmadeSprite: {fileID: 21300000, guid: 8b164b733311e884ea4c3ec0c0f21967, type: 3}
@@ -7656,7 +7647,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 1.2, y: 0.7}
   m_EdgeRadius: 0
 --- !u!212 &1654265179
 SpriteRenderer:
