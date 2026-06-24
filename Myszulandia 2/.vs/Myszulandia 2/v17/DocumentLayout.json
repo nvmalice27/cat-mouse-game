@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\myszu\\CatMouseGame\\Myszulandia 2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{953A20C8-9567-FDC0-1088-79566E52B93D}|Assembly-CSharp.csproj|c:\\users\\myszu\\catmousegame\\myszulandia 2\\assets\\scripts\\managers\\mousestatemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{953A20C8-9567-FDC0-1088-79566E52B93D}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\managers\\mousestatemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MouseStateManager.cs",
+              "DocumentMoniker": "C:\\Users\\myszu\\CatMouseGame\\Myszulandia 2\\Assets\\Scripts\\Managers\\MouseStateManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Managers\\MouseStateManager.cs",
+              "ToolTip": "C:\\Users\\myszu\\CatMouseGame\\Myszulandia 2\\Assets\\Scripts\\Managers\\MouseStateManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Managers\\MouseStateManager.cs",
+              "ViewState": "AgIAACMBAAAAAAAAAADgvzUBAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-24T00:40:18.31Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

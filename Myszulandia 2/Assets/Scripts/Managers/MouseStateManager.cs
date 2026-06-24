@@ -307,8 +307,8 @@ public class MouseStateManager : MonoBehaviour
     public void ResetForNewDay()
     {
         _hunger = _dirt = 0f;
-        _recoveryCounter = _randomStateTimer = _badStateTimer =
-            _collectibleTimer = _tempStateTimer = 0f;
+        _recoveryCounter = 0;
+        _randomStateTimer = _badStateTimer = _collectibleTimer = _tempStateTimer = 0f;
         SetState(MouseState.Normal);
         _timersRunning = true;
     }

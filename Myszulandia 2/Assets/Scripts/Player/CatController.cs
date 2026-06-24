@@ -30,15 +30,15 @@ public class CatController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!_moving) { _rb.linearVelocity = Vector2.zero; return; }
+        if (!_moving) { _rb.velocity = Vector2.zero; return; }
         Vector2 dir = _target - (Vector2)transform.position;
         if (dir.magnitude < 0.08f)
         {
-            _moving              = false;
-            _rb.linearVelocity   = Vector2.zero;
+            _moving      = false;
+            _rb.velocity = Vector2.zero;
             return;
         }
-        _rb.linearVelocity = dir.normalized * moveSpeed;
+        _rb.velocity = dir.normalized * moveSpeed;
         if (spriteRenderer != null) spriteRenderer.flipX = dir.x < 0;
     }
 }
