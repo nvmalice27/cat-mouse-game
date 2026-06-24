@@ -93,8 +93,9 @@ public static class RoomSceneSetup
         }
         for (int i = 0; i < 3; i++)
         {
-            var s = MakeInteractable($"Sock_{i + 1}", new Vector3(0.5f + i * 1f, 1.5f, 0));
-            s.AddComponent<SockObject>();
+            var s    = MakeInteractable($"Sock_{i + 1}", new Vector3(0.5f + i * 1f, 1.5f, 0));
+            var sock = s.AddComponent<SockObject>();
+            SetIntField(sock, "sockIndex", i);
         }
 
         // ── UI CANVAS ───────────────────────────────────────────────────────
@@ -237,6 +238,14 @@ public static class RoomSceneSetup
         var sp = so.FindProperty(fieldName);
         if (sp != null) { sp.objectReferenceValue = value; so.ApplyModifiedProperties(); }
         else Debug.LogWarning($"Field '{fieldName}' not found on {target.GetType().Name}");
+    }
+
+    static void SetIntField(Object target, string fieldName, int value)
+    {
+        var so = new SerializedObject(target);
+        var sp = so.FindProperty(fieldName);
+        if (sp != null) { sp.intValue = value; so.ApplyModifiedProperties(); }
+        else Debug.LogWarning($"Int field '{fieldName}' not found on {target.GetType().Name}");
     }
 
     static GameObject MakeInteractable(string name, Vector3 pos)

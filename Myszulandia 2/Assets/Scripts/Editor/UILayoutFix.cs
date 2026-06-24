@@ -4,6 +4,28 @@ using UnityEngine.UI;
 
 public static class UILayoutFix
 {
+    [MenuItem("CatMouse/Fix Sock Indices (Room scene)")]
+    public static void FixSockIndices()
+    {
+        int fixed_ = 0;
+        for (int i = 1; i <= 3; i++)
+        {
+            var go = GameObject.Find($"Sock_{i}");
+            if (go == null) { Debug.LogWarning($"Nie znaleziono Sock_{i}"); continue; }
+            var sock = go.GetComponent<SockObject>();
+            if (sock == null) { Debug.LogWarning($"Sock_{i} nie ma SockObject"); continue; }
+            var so = new SerializedObject(sock);
+            var sp = so.FindProperty("sockIndex");
+            if (sp != null) { sp.intValue = i - 1; so.ApplyModifiedProperties(); }
+            EditorUtility.SetDirty(sock);
+            fixed_++;
+        }
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+        Debug.Log($"✓ Ustawiono indeksy dla {fixed_} skarpetkach.");
+    }
+
     [MenuItem("CatMouse/Fix UI Positions (ta scena)")]
     public static void FixPositions()
     {

@@ -19,10 +19,22 @@ public class InventoryManager : MonoBehaviour
     int _socksCollected;
     readonly List<InventoryItem> _items = new();
 
+    // Stan dzienny — co zostało zebrane dziś (resetuje się z nowym dniem)
+    bool[] _sockHarvestedToday        = new bool[3];
+    bool[] _ingredientHarvestedToday  = new bool[3];
+    bool   _cookedToday;
+
     public int CrumbsTotal       => _crumbsTotal;
     public int CrumbsInInventory => _crumbsInInventory;
     public int SocksCollected    => _socksCollected;
     public IReadOnlyList<InventoryItem> Items => _items;
+
+    // Accessory stanu dziennego
+    public bool IsSockHarvested(int idx)       => idx >= 0 && idx < 3 && _sockHarvestedToday[idx];
+    public bool IsIngredientHarvested(int idx) => idx >= 0 && idx < 3 && _ingredientHarvestedToday[idx];
+    public bool CookedToday                    => _cookedToday;
+    public void MarkIngredientHarvested(int idx) { if (idx >= 0 && idx < 3) _ingredientHarvestedToday[idx] = true; }
+    public void MarkCooked()                     => _cookedToday = true;
 
     void Awake()
     {
@@ -49,11 +61,13 @@ public class InventoryManager : MonoBehaviour
         MouseStateManager.Instance.ApplyNegativeAction(true);
     }
 
-    public void CollectSock()
+    public void CollectSock(int sockIndex = -1)
     {
+        if (sockIndex >= 0 && sockIndex < 3) _sockHarvestedToday[sockIndex] = true;
         if (_socksCollected >= 3) return;
         _socksCollected++;
         GameEvents.RaiseSocksChanged(_socksCollected);
+        GameEvents.RaiseInventoryChanged();
     }
 
     public bool TryUseSocksOnMouse()
@@ -114,8 +128,12 @@ public class InventoryManager : MonoBehaviour
 
     public void ResetDailyItems()
     {
-        _socksCollected = 0;
-        GameEvents.RaiseSocksChanged(0);
+        // Stan dzienny — skarpety i składniki pojawiają się z powrotem w pokoju/kuchni
+        _sockHarvestedToday       = new bool[3];
+        _ingredientHarvestedToday = new bool[3];
+        _cookedToday              = false;
+        // _socksCollected NIE jest zerowane — skarpety w ekwipunku przechodzą na kolejny dzień
+        GameEvents.RaiseSocksChanged(_socksCollected);
         GameEvents.RaiseInventoryChanged();
     }
 

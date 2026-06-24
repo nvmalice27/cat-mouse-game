@@ -1,13 +1,21 @@
 using UnityEngine;
 
-public class SockObject : MonoBehaviour
+public class SockObject : ClickableObject
 {
-    void OnEnable()  => GameEvents.OnNewDayStarted += Respawn;
-    void OnDisable() => GameEvents.OnNewDayStarted -= Respawn;
+    [SerializeField] int sockIndex;
 
-    void OnMouseDown()
+    void Awake()  => GameEvents.OnNewDayStarted += Respawn;
+    void OnDestroy() => GameEvents.OnNewDayStarted -= Respawn;
+
+    void Start()
     {
-        InventoryManager.Instance.CollectSock();
+        if (InventoryManager.Instance != null && InventoryManager.Instance.IsSockHarvested(sockIndex))
+            gameObject.SetActive(false);
+    }
+
+    protected override void OnInteract()
+    {
+        InventoryManager.Instance.CollectSock(sockIndex);
         gameObject.SetActive(false);
     }
 
