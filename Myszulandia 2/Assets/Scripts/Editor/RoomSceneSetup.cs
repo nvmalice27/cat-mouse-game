@@ -243,7 +243,8 @@ public static class RoomSceneSetup
         go.transform.position = pos;
         var sr = go.AddComponent<SpriteRenderer>();
         sr.sortingOrder = 2;
-        go.AddComponent<BoxCollider2D>();
+        var col = go.AddComponent<BoxCollider2D>();
+        col.size = new Vector2(1f, 1f);
         return go;
     }
 

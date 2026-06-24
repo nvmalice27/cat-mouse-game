@@ -95,6 +95,9 @@ public static class PlaceholderSetup
         for (int i = 1; i <= 3; i++) AssignSprite($"Crumb_{i}", sprCrumb);
         for (int i = 1; i <= 3; i++) AssignSprite($"Sock_{i}",  sprSock);
 
+        // ── fix all zero-size BoxCollider2Ds ───────────────────────────────
+        FixAllColliders();
+
         // ── create InventorySlot prefab ────────────────────────────────────
         string prefabPath = "Assets/Prefabs/UI/InventorySlot.prefab";
         var slotGO = new GameObject("InventorySlot");
@@ -216,6 +219,23 @@ public static class PlaceholderSetup
         var sp = so.FindProperty(field);
         if (sp != null) { sp.objectReferenceValue = value; so.ApplyModifiedProperties(); }
         else Debug.LogWarning($"Pole '{field}' nie znalezione na {target.GetType().Name}");
+    }
+
+    static void FixAllColliders()
+    {
+        foreach (var col in Object.FindObjectsOfType<BoxCollider2D>())
+        {
+            if (col.size.x < 0.01f || col.size.y < 0.01f)
+            {
+                var sr = col.GetComponent<SpriteRenderer>();
+                if (sr != null && sr.sprite != null)
+                    col.size = sr.sprite.bounds.size;
+                else
+                    col.size = new Vector2(1f, 1f);
+                EditorUtility.SetDirty(col);
+            }
+        }
+        Debug.Log("✓ Kolizje naprawione.");
     }
 
     static void EnsureFolder(string parent, string child)
