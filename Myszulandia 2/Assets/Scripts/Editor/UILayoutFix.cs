@@ -2,9 +2,57 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public static class UILayoutFix
 {
+    // ── FIX ALL SCENES (one click) ────────────────────────────────────────────
+
+    [MenuItem("CatMouse/!!! Fix All Scenes (kliknij to) !!!")]
+    public static void FixAllScenes()
+    {
+        string[] sceneNames = { "Room", "Kitchen", "Bathroom" };
+        string originalPath = UnityEditor.SceneManagement.EditorSceneManager
+            .GetActiveScene().path;
+
+        foreach (var sceneName in sceneNames)
+        {
+            // Znajdź ścieżkę sceny po nazwie pliku
+            string[] guids = AssetDatabase.FindAssets($"t:Scene {sceneName}");
+            string scenePath = null;
+            foreach (var guid in guids)
+            {
+                string p = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetFileNameWithoutExtension(p) == sceneName)
+                {
+                    scenePath = p;
+                    break;
+                }
+            }
+            if (scenePath == null) { Debug.LogWarning($"Scena {sceneName} nie znaleziona"); continue; }
+
+            // Otwórz scenę
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath);
+            Debug.Log($"[FixAll] Naprawiam: {sceneName}...");
+
+            // Napraw CutscenePanel (dzień/noc)
+            FixCutscenePanelInternal();
+
+            // Napraw przyciski nawigacji
+            AddNavButtonsInternal();
+
+            // Zapisz
+            UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+            Debug.Log($"[FixAll] ✓ {sceneName} zapisana.");
+        }
+
+        // Wróć do oryginalnej sceny
+        if (!string.IsNullOrEmpty(originalPath))
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(originalPath);
+
+        Debug.Log("✓ Wszystkie sceny naprawione! CutscenePanel + NavButtons.");
+    }
+
     // ── Fix Sock Indices ──────────────────────────────────────────────────────
 
     [MenuItem("CatMouse/Fix Sock Indices (Room scene)")]
@@ -80,13 +128,17 @@ public static class UILayoutFix
     [MenuItem("CatMouse/Fix Cutscene Panel (ta scena)")]
     public static void FixCutscenePanel()
     {
+        FixCutscenePanelInternal();
+        SaveScene();
+    }
+
+    static void FixCutscenePanelInternal()
+    {
         var go = GameObject.Find("CutscenePanel");
         if (go == null) { Debug.LogWarning("Nie znaleziono CutscenePanel."); return; }
 
-        // Musi być aktywny żeby Awake() się odpaliło
         go.SetActive(true);
 
-        // CanvasGroup ukrywa wizualnie zamiast SetActive(false)
         var cg = go.GetComponent<CanvasGroup>();
         if (cg == null) cg = go.AddComponent<CanvasGroup>();
         cg.alpha          = 0f;
@@ -94,8 +146,7 @@ public static class UILayoutFix
         cg.interactable   = false;
 
         EditorUtility.SetDirty(go);
-        SaveScene();
-        Debug.Log("✓ CutscenePanel naprawiony — teraz aktywny ale niewidoczny.");
+        Debug.Log($"  CutscenePanel: aktywny + CanvasGroup(alpha=0)");
     }
 
     // ── Add Nav Buttons ───────────────────────────────────────────────────────
@@ -103,14 +154,19 @@ public static class UILayoutFix
     [MenuItem("CatMouse/Add Nav Buttons (ta scena)")]
     public static void AddNavButtons()
     {
+        AddNavButtonsInternal();
+        SaveScene();
+    }
+
+    static void AddNavButtonsInternal()
+    {
         var canvas = Object.FindObjectOfType<Canvas>();
         if (canvas == null) { Debug.LogWarning("Brak Canvas na scenie."); return; }
 
-        // Usuń stare (mogły być wired do GameManager — nieprawidłowe)
+        // Usuń stare (mogły być wired do GameManager)
         var existing = GameObject.Find("NavButtons");
         if (existing != null) Object.DestroyImmediate(existing);
 
-        // Kontener — prawy górny róg
         var navGO = new GameObject("NavButtons");
         navGO.transform.SetParent(canvas.transform, false);
         var navRT = navGO.AddComponent<RectTransform>();
@@ -120,7 +176,6 @@ public static class UILayoutFix
         navRT.anchoredPosition = new Vector2(-10f, -10f);
         navRT.sizeDelta        = new Vector2(230f, 44f);
 
-        // NavHelper czyta singleton dynamicznie — nie trzyma direct reference do sceny
         var helper = navGO.AddComponent<NavHelper>();
 
         MakeNavBtn("BtnGaleria", navGO.transform, new Vector2(-120f, 0f), "Galeria",
@@ -129,8 +184,7 @@ public static class UILayoutFix
             helper, "GoToMainMenu");
 
         EditorUtility.SetDirty(navGO);
-        SaveScene();
-        Debug.Log("✓ Przyciski nawigacji dodane z NavHelper (prawy górny róg).");
+        Debug.Log($"  NavButtons: dodane z NavHelper.");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
