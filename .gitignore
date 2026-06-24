@@ -1,10 +1,13 @@
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Uu]ser[Ss]ettings/
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Visual Studio
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
@@ -18,8 +21,14 @@
 *.pdb
 *.opendb
 *.VC.db
-/[Aa]ssets/[Pp]lugins/Editor/JetBrains*
+*.sln
+*.csproj
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Unity packages
 *.apk
 *.aab
 *.unitypackage
