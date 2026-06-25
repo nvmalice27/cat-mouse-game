@@ -14,7 +14,7 @@ public class GallerySlot : MonoBehaviour
     {
         mouseImage.sprite = unlocked ? data.sprite : lockedSprite;
         lockedOverlay.gameObject.SetActive(!unlocked);
-        nameText.text     = unlocked ? data.displayName : "???";
+        nameText.text     = data.displayName;
         hintText.text     = unlocked ? data.galleryHint : "";
     }
 }
