@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using UnityEngine.UI;
 
 public static class TrimActionMenu
 {
@@ -18,12 +17,12 @@ public static class TrimActionMenu
             string path = FindScenePath(sceneName);
             if (path == null) { Debug.LogWarning($"TrimActionMenu: nie znaleziono sceny {sceneName}."); continue; }
 
-            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
 
-            var panel = GameObject.Find("ActionMenuPanel");
-            if (panel == null) { EditorSceneManager.CloseScene(scene, false); continue; }
+            // Search all root objects in this scene for ActionMenuPanel
+            var panel = FindInScene(scene, "ActionMenuPanel");
+            if (panel == null) { Debug.LogWarning($"{sceneName}: nie znaleziono ActionMenuPanel."); continue; }
 
-            // Remove extra buttons
             int removed = 0;
             foreach (string btnName in ExtraButtons)
             {
@@ -33,24 +32,45 @@ public static class TrimActionMenu
                 removed++;
             }
 
-            // Re-centre the 2 remaining buttons
+            // Re-centre the remaining buttons
             int remaining = panel.transform.childCount;
-            float totalW  = remaining * 60f + (remaining - 1) * 2f;
-            float startX  = -totalW / 2f + 30f;
-            for (int i = 0; i < remaining; i++)
+            if (remaining > 0)
             {
-                var rt = panel.transform.GetChild(i).GetComponent<RectTransform>();
-                if (rt != null) rt.anchoredPosition = new Vector2(startX + i * 62f, 0f);
+                float startX = -(remaining - 1) * 31f;
+                for (int i = 0; i < remaining; i++)
+                {
+                    var rt = panel.transform.GetChild(i).GetComponent<RectTransform>();
+                    if (rt != null) rt.anchoredPosition = new Vector2(startX + i * 62f, 0f);
+                }
             }
 
             EditorSceneManager.SaveScene(scene);
-            EditorSceneManager.CloseScene(scene, false);
-
             totalRemoved += removed;
             Debug.Log($"✓ {sceneName}: usunięto {removed} przycisk(i).");
         }
 
         Debug.Log($"✓ Gotowe — usunięto łącznie {totalRemoved} przycisków.");
+    }
+
+    static GameObject FindInScene(UnityEngine.SceneManagement.Scene scene, string name)
+    {
+        foreach (var root in scene.GetRootGameObjects())
+        {
+            var found = FindInChildren(root.transform, name);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    static GameObject FindInChildren(Transform t, string name)
+    {
+        if (t.name == name) return t.gameObject;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            var found = FindInChildren(t.GetChild(i), name);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     static string FindScenePath(string sceneName)
