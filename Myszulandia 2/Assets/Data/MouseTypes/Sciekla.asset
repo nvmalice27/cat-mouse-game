@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0af6f2b54207def4ea91654e66a14ec3, type: 3}
-  m_Name: Pirat
+  m_Name: Sciekla
   m_EditorClassIdentifier: 
-  displayName: Pirat
+  displayName: "\u015Aciek\u0142a"
   sprite: {fileID: 0}
   animationClip: {fileID: 0}
   format: 0
-  cutsceneKey: Pirat
-  galleryHint: "Kliknij \u0142\xF3\u017Cko i poczekaj."
+  cutsceneKey: Sciekla
+  galleryHint: "Doprowad\u017A myszk\u0119 do ostateczno\u015Bci."
