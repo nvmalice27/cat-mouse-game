@@ -8,8 +8,6 @@ public class MouseActionMenu : MonoBehaviour
     public void Hide()   => panel.SetActive(false);
     public void Toggle() => panel.SetActive(!panel.activeSelf);
 
-    public void OnHug()  { MouseStateManager.Instance.ApplyDirectAction(0); Hide(); }
-    public void OnKiss() { MouseStateManager.Instance.ApplyDirectAction(1); Hide(); }
-    public void OnPet()  { MouseStateManager.Instance.ApplyDirectAction(2); Hide(); }
-    public void OnPlay() { MouseStateManager.Instance.ApplyDirectAction(3); Hide(); }
+    public void OnHug()  { MouseStateManager.Instance.TriggerHug();  Hide(); }
+    public void OnKiss() { MouseStateManager.Instance.TriggerKiss(); Hide(); }
 }
