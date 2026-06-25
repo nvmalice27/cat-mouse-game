@@ -58,7 +58,7 @@ public class InventoryManager : MonoBehaviour
         if (_crumbsInInventory <= 0) return;
         _crumbsInInventory--;
         GameEvents.RaiseInventoryChanged();
-        MouseStateManager.Instance.ApplyNegativeAction();
+        MouseStateManager.Instance.TriggerCrumbs();
     }
 
     public void CollectSock(int sockIndex = -1)

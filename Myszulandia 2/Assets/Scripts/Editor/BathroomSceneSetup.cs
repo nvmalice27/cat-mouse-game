@@ -161,15 +161,15 @@ public static class BathroomSceneSetup
         AddImage(actionPanelGO, new Color(0.1f, 0.1f, 0.1f, 0.88f));
         var actionMenu = actionPanelGO.AddComponent<MouseActionMenu>();
         SetField(actionMenu, "panel", actionPanelGO);
-        string[] btnLabels  = { "Przytul", "Pocałuj", "Pogłaszcz", "Pobaw się" };
-        string[] btnMethods = { "OnHug",   "OnKiss",  "OnPet",     "OnPlay"    };
-        for (int i = 0; i < 4; i++)
+        string[] btnLabels  = { "Przytul", "Pocałuj" };
+        string[] btnMethods = { "OnHug",   "OnKiss"  };
+        for (int i = 0; i < btnLabels.Length; i++)
         {
             var bGO = new GameObject(btnLabels[i]);
             bGO.transform.SetParent(actionPanelGO.transform, false);
             var bRT  = bGO.AddComponent<RectTransform>();
             bRT.sizeDelta        = new Vector2(60, 60);
-            bRT.anchoredPosition = new Vector2(-90 + i * 62, 0);
+            bRT.anchoredPosition = new Vector2(-31 + i * 62, 0);
             AddImage(bGO, new Color(0.25f, 0.25f, 0.35f, 1f));
             bGO.AddComponent<Button>();
             MakeTMP(btnLabels[i] + "Label", bGO.transform, btnLabels[i], Vector2.zero, 10);

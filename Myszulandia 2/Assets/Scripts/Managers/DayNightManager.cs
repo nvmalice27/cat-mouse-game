@@ -25,10 +25,9 @@ public class DayNightManager : MonoBehaviour
     {
         if (!_dayActive) return;
         _dayActive = false;
+        bool isMakapaka = MouseStateManager.Instance.CurrentState == MouseState.Makapaka;
         MouseStateManager.Instance.TriggerSleep();
         MouseStateManager.Instance.PauseTimers();
-
-        bool isMakapaka = MouseStateManager.Instance.CurrentState == MouseState.Makapaka;
         string key = isMakapaka ? "NightMakapaka" : "Night";
 
         SaveManager.Instance.Save();
