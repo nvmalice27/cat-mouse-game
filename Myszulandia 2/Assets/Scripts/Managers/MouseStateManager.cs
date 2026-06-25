@@ -415,7 +415,6 @@ public class MouseStateManager : MonoBehaviour
         if (IsBadState(_state)) return;
 
         if (_state == MouseState.Smrodliwa) { _dirt = 0f; EnterCollectible(MouseState.Pachnaca); return; }
-        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
         // czysta mysz — brak efektu
     }
 
