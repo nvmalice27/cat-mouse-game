@@ -13,8 +13,8 @@ public class KitchenScene : MonoBehaviour
     readonly List<int> _collected = new();
     bool _cooking;
 
-    void OnEnable()  => GameEvents.OnNewDayStarted += OnNewDay;
-    void OnDisable() => GameEvents.OnNewDayStarted -= OnNewDay;
+    void OnEnable()  { GameEvents.OnNewDayStarted += OnNewDay; GameEvents.OnMouseStateChanged += OnStateChanged; }
+    void OnDisable() { GameEvents.OnNewDayStarted -= OnNewDay; GameEvents.OnMouseStateChanged -= OnStateChanged; }
 
     void Start()
     {
@@ -53,6 +53,12 @@ public class KitchenScene : MonoBehaviour
         _collected.Clear();
         foreach (var src in ingredientSources) src.SetActive(true);
         if (cookButton != null) cookButton.SetActive(false);
+    }
+
+    void OnStateChanged(MouseState newState)
+    {
+        if (newState == MouseState.Smutna)
+            GameManager.Instance.NavigateTo("Room");
     }
 
     void DisableAllSources()

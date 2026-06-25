@@ -15,4 +15,16 @@ public class BedObject : ClickableObject
         if (_made) MouseStateManager.Instance.TriggerPirat();
         else       MouseStateManager.Instance.ClearPirat();
     }
+
+    void OnEnable()  => GameEvents.OnMouseStateChanged += OnStateChanged;
+    void OnDisable() => GameEvents.OnMouseStateChanged -= OnStateChanged;
+
+    void OnStateChanged(MouseState newState)
+    {
+        if (newState != MouseState.Pirat && _made)
+        {
+            _made     = false;
+            sr.sprite = unmadeSprite;
+        }
+    }
 }
