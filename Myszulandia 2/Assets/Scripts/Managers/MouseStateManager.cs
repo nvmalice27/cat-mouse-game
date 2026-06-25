@@ -1,95 +1,153 @@
 using UnityEngine;
-using System.Collections;
 
 public class MouseStateManager : MonoBehaviour
 {
     public static MouseStateManager Instance { get; private set; }
 
-    const float HungerRate          = 1f / 3f;
-    const float DirtRate            = 1f / 4.2f;
-    const float HungerNormalMax     = 40f;
-    const float HungerHungryMax     = 80f;
-    const float DirtDirtyThreshold  = 60f;
-    const float RandomStateInterval = 180f;
-    const float TempStateTimeout    = 120f;
-    const float CollectibleDuration = 120f;
-    const float BadStateAutoAdvance = 300f;
-    const int   SmutnaRecovery      = 3;
-    const int   ZlowrogaRecovery    = 5;
-    const int   ScieklaRecovery     = 10;
+    // Stałe — zmień StatGrowRate dla balansu
+    const float StatGrowRate        = 1f / 60f;
+    const float NeedThreshold       = 60f;
+    const float NeedMax             = 100f;
+    const float InactivityTimeout   = 60f;
+    const float BadStateTimeout     = 60f;
+    const float ObrazedBlockDur     = 60f;
+    const float ObrazedGraceDur     = 60f;
+    const float CollectibleDuration = 60f;
+    const int   UnlockedSize        = 27;
 
+    // Staty
     float _hunger;
+    float _attention;
     float _dirt;
-    MouseState _state = MouseState.Normal;
-    bool[] _unlocked = new bool[21];
-    int   _recoveryCounter;
-    float _randomStateTimer;
+
+    // Stan
+    MouseState _state    = MouseState.Normal;
+    bool[]     _unlocked = new bool[UnlockedSize];
+
+    // Timery
+    float _inactivityTimer;
     float _badStateTimer;
+    float _obrazonaTimer;
     float _collectibleTimer;
-    float _tempStateTimer;
-    bool  _timersRunning = true;
+    bool  _running = true;
 
     void Awake()
     {
-        if (Instance != null) { Destroy(this); return; }
+        if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
+    // ── Właściwości publiczne ─────────────────────────────────────────────
+
+    public MouseState CurrentState  => _state;
+    public float      Hunger        => _hunger;
+    public float      Attention     => _attention;
+    public float      Dirt          => _dirt;
+    public bool[]     UnlockedTypes => _unlocked;
+
+    public bool IsHungry()  => _hunger    >= NeedThreshold;
+    public bool IsDirty()   => _dirt      >= NeedThreshold;
+    public bool IsWanting() => _attention >= NeedThreshold;
+
+    // ── Kontrola timerów ─────────────────────────────────────────────────
+
+    public void PauseTimers()  => _running = false;
+    public void ResumeTimers() => _running = true;
+
+    public void ResetForNewDay()
+    {
+        _hunger = _attention = _dirt = 0f;
+        _inactivityTimer = _badStateTimer = _obrazonaTimer = _collectibleTimer = 0f;
+        SetState(MouseState.Normal);
+        _running = true;
+    }
+
+    // ── Zapis/Odczyt ─────────────────────────────────────────────────────
+
+    public void ApplySaveData(SaveData d)
+    {
+        _hunger    = d.hunger;
+        _attention = d.attention;
+        _dirt      = d.dirt;
+        _state     = (MouseState)d.mouseStateValue;
+        var saved  = d.unlockedMouseTypes;
+        _unlocked  = new bool[UnlockedSize];
+        for (int i = 0; i < Mathf.Min(saved.Length, _unlocked.Length); i++)
+            _unlocked[i] = saved[i];
+        GameEvents.RaiseMouseStateChanged(_state);
+    }
+
+    public void WriteSaveData(SaveData d)
+    {
+        d.hunger             = _hunger;
+        d.attention          = _attention;
+        d.dirt               = _dirt;
+        d.mouseStateValue    = (int)_state;
+        d.unlockedMouseTypes = (bool[])_unlocked.Clone();
+    }
+
+    // ── Update ───────────────────────────────────────────────────────────
+
     void Update()
     {
-        if (!_timersRunning) return;
+        if (!_running) return;
         float dt = Time.deltaTime;
-        _hunger = Mathf.Min(100f, _hunger + HungerRate * dt);
-        _dirt   = Mathf.Min(100f, _dirt   + DirtRate   * dt);
+        UpdateStats(dt);
+        UpdateTimers(dt);
+    }
 
-        if (IsNormalOrHungry())
+    void UpdateStats(float dt)
+    {
+        if (IsStatsFrozen()) return;
+
+        _hunger    = Mathf.Min(NeedMax, _hunger    + StatGrowRate * dt);
+        _attention = Mathf.Min(NeedMax, _attention + StatGrowRate * dt);
+        _dirt      = Mathf.Min(NeedMax, _dirt      + StatGrowRate * dt);
+
+        // Którykolwiek stat = 100 → Złowroga
+        if (_hunger >= NeedMax || _attention >= NeedMax || _dirt >= NeedMax)
         {
-            SyncHungerState();
-            _randomStateTimer += dt;
-            if (_randomStateTimer >= RandomStateInterval)
-            {
-                _randomStateTimer = 0f;
-                DrawRandomTempState();
-            }
+            ResetAllStats();
+            EnterBadState(MouseState.Zlowroga);
+            return;
         }
-        else if (IsTemporary())
+
+        // Aktywny stan potrzeby + drugi stat przekracza 60 → Złowroga
+        if (IsNeedState(_state))
         {
-            _tempStateTimer += dt;
-            if (_tempStateTimer >= TempStateTimeout)
-            {
-                _tempStateTimer = 0f;
-                OnTempStateExpired();
-            }
+            bool second = (_hunger    >= NeedThreshold && _state != MouseState.Hungry)   ||
+                          (_attention >= NeedThreshold && _state != MouseState.Chcaca)    ||
+                          (_dirt      >= NeedThreshold && _state != MouseState.Smrodliwa);
+            if (second) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); }
+            return;
         }
-        else if (IsBadState())
+
+        // Nowy stan potrzeby — priorytet: głód, potem uwaga, potem brud
+        if (_hunger    >= NeedThreshold) { EnterNeedState(MouseState.Hungry);    return; }
+        if (_attention >= NeedThreshold) { EnterNeedState(MouseState.Chcaca);    return; }
+        if (_dirt      >= NeedThreshold) { EnterNeedState(MouseState.Smrodliwa); return; }
+    }
+
+    void UpdateTimers(float dt)
+    {
+        // Stany pozytywne (normalne + kolekcjonerskie + potrzeb)
+        if (IsPositiveOrNeed(_state))
         {
-            _badStateTimer += dt;
-            if (_badStateTimer >= BadStateAutoAdvance)
+            // Timer aktywności — tylko gdy nie w stanie potrzeby
+            if (!IsNeedState(_state))
             {
-                _badStateTimer = 0f;
-                AdvanceBadState();
-            }
-        }
-        else if (IsCollectible())
-        {
-            // Obrazona traktujemy jak łagodny zły stan — eskaluje zamiast wracać do bazy
-            if (_state == MouseState.Obrazona)
-            {
-                if (_hunger >= HungerHungryMax)
+                _inactivityTimer += dt;
+                if (_inactivityTimer >= InactivityTimeout)
                 {
-                    _hunger = HungerNormalMax;
+                    _inactivityTimer = 0f;
                     EnterBadState(MouseState.Smutna);
                     return;
                 }
-                _collectibleTimer += dt;
-                if (_collectibleTimer >= BadStateAutoAdvance)
-                {
-                    _collectibleTimer = 0f;
-                    EnterBadState(MouseState.Smutna);
-                }
             }
-            else
+
+            // Timer kolekcjonerski — nie dla stanów nieskończonych
+            if (IsTimedCollectible(_state))
             {
                 _collectibleTimer += dt;
                 if (_collectibleTimer >= CollectibleDuration)
@@ -98,248 +156,128 @@ public class MouseStateManager : MonoBehaviour
                     ReturnToBase();
                 }
             }
+            return;
         }
-    }
 
-    public bool IsNormalOrHungry() =>
-        _state == MouseState.Normal || _state == MouseState.Hungry;
-    public bool IsTemporary() =>
-        _state == MouseState.Rozochocona || _state == MouseState.Chcaca || _state == MouseState.Zrozpaczona;
-    public bool IsBadState() =>
-        _state is MouseState.Smutna or MouseState.Zlowroga or MouseState.Sciekla or MouseState.ScieklaII;
-    public bool IsCollectible() =>
-        (int)_state >= 10 && (int)_state <= 24;
-    public bool IsHungry() => _hunger >= HungerNormalMax;
-    public bool IsDirty()  => _dirt   >= DirtDirtyThreshold;
-
-    void SyncHungerState()
-    {
-        if (_hunger >= HungerHungryMax)
+        // Złe stany
+        if (IsBadState(_state))
         {
-            _hunger = HungerNormalMax;
-            ApplyNegativeAction();
-        }
-        else
-        {
-            MouseState target = _hunger < HungerNormalMax ? MouseState.Normal : MouseState.Hungry;
-            if (_state != target)
+            _badStateTimer += dt;
+            if (_badStateTimer >= BadStateTimeout)
             {
-                SetState(target);
-                if (target == MouseState.Hungry) TryUnlock(MouseState.Hungry);
+                _badStateTimer = 0f;
+                AdvanceBadState();
+            }
+            return;
+        }
+
+        // Obrażona — dwufazowa
+        if (_state == MouseState.Obrazona)
+        {
+            _obrazonaTimer += dt;
+            // Faza 2 (łaska) przekroczyła czas → Złowroga przez brak aktywności
+            if (_obrazonaTimer >= ObrazedBlockDur + ObrazedGraceDur)
+            {
+                _obrazonaTimer = 0f;
+                EnterBadState(MouseState.Zlowroga);
             }
         }
     }
 
-    void DrawRandomTempState()
-    {
-        MouseState s = Random.Range(0, 3) switch
-        {
-            0 => MouseState.Rozochocona,
-            1 => MouseState.Chcaca,
-            _ => MouseState.Zrozpaczona
-        };
-        SetState(s);
-        _tempStateTimer = 0f;
-        TryUnlock(s);
-    }
+    // ── Klasyfikacja stanów ───────────────────────────────────────────────
 
-    void OnTempStateExpired()
+    bool IsStatsFrozen()  => IsBadState(_state) || _state == MouseState.Obrazona;
+
+    static bool IsNeedState(MouseState s) =>
+        s == MouseState.Hungry || s == MouseState.Chcaca || s == MouseState.Smrodliwa;
+
+    static bool IsBadState(MouseState s) =>
+        s is MouseState.Smutna or MouseState.Zrozpaczona or
+             MouseState.Zlowroga or MouseState.Sciekla or MouseState.ScieklaII;
+
+    static bool IsPositiveOrNeed(MouseState s) => !IsBadState(s) && s != MouseState.Obrazona;
+
+    static bool IsTimedCollectible(MouseState s) =>
+        IsPositiveOrNeed(s) && !IsNeedState(s) &&
+        s != MouseState.Normal && s != MouseState.Pirat && s != MouseState.Myszkujaca;
+
+    // ── Przejścia stanów ──────────────────────────────────────────────────
+
+    void EnterNeedState(MouseState s)
     {
-        if (_state == MouseState.Zrozpaczona)
-            EnterBadState(MouseState.Zlowroga);
-        else
-            EnterBadState(MouseState.Smutna);
+        SetState(s);
+        _inactivityTimer  = 0f;
+        _collectibleTimer = 0f;
+        TryUnlock(s);
     }
 
     void EnterBadState(MouseState bad)
     {
+        ResetAllStats();
         SetState(bad);
-        _badStateTimer   = 0f;
-        _recoveryCounter = 0;
-        TryUnlockBadState(bad);
+        _badStateTimer    = 0f;
+        _inactivityTimer  = 0f;
+        _collectibleTimer = 0f;
+        TryUnlock(bad);
         if (bad == MouseState.ScieklaII) TriggerGameOver();
-    }
-
-    void TryUnlockBadState(MouseState bad)
-    {
-        int idx = bad switch
-        {
-            MouseState.Smutna   => 14,
-            MouseState.Zlowroga => 15,
-            MouseState.Sciekla  => 16,
-            _                   => -1
-        };
-        if (idx < 0 || idx >= _unlocked.Length) return;
-        bool isFirst = !_unlocked[idx];
-        _unlocked[idx] = true;
-        GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
     }
 
     void AdvanceBadState()
     {
         MouseState next = _state switch
         {
-            MouseState.Smutna   => MouseState.Zlowroga,
-            MouseState.Zlowroga => MouseState.Sciekla,
-            MouseState.Sciekla  => MouseState.ScieklaII,
-            _                   => MouseState.ScieklaII
+            MouseState.Smutna      => MouseState.Zrozpaczona,
+            MouseState.Zrozpaczona => MouseState.Zlowroga,
+            MouseState.Zlowroga    => MouseState.Sciekla,
+            MouseState.Sciekla     => MouseState.ScieklaII,
+            _                      => MouseState.ScieklaII
         };
         EnterBadState(next);
     }
 
-    public void ApplyNegativeAction()
+    void RecoverBadState()
     {
-        if (IsBadState())                  { AdvanceBadState(); return; }
-        if (_state == MouseState.Obrazona) { EnterBadState(MouseState.Smutna); return; }
-        // Z dowolnego stanu (normalny, głodny, losowy, kolekcjonerski) → Obrażona
-        EnterCollectibleState(MouseState.Obrazona);
-    }
-
-    public void ApplyDirectAction(int action)
-    {
-        if (IsBadState())
+        MouseState prev = _state switch
         {
-            _recoveryCounter++;
-            int needed = _state switch
-            {
-                MouseState.Smutna   => SmutnaRecovery,
-                MouseState.Zlowroga => ZlowrogaRecovery,
-                MouseState.Sciekla  => ScieklaRecovery,
-                _                   => 999
-            };
-            if (_recoveryCounter >= needed)
-            {
-                _recoveryCounter = 0;
-                MouseState prev = _state switch
-                {
-                    MouseState.Smutna   => MouseState.Normal,
-                    MouseState.Zlowroga => MouseState.Smutna,
-                    MouseState.Sciekla  => MouseState.Zlowroga,
-                    _                   => MouseState.Zlowroga
-                };
-                SetState(prev);
-                _badStateTimer = 0f;
-            }
-            return;
-        }
-
-        if (!IsTemporary()) return;
-
-        bool correct = (_state == MouseState.Zrozpaczona && action == 0) ||
-                       (_state == MouseState.Chcaca       && action == 1) ||
-                       (_state == MouseState.Rozochocona  && action == 3);
-        if (!correct) return;
-
-        _tempStateTimer = 0f;
-        ReturnToBase();
+            MouseState.Smutna      => MouseState.Normal,
+            MouseState.Zrozpaczona => MouseState.Smutna,
+            MouseState.Zlowroga    => MouseState.Zrozpaczona,
+            MouseState.Sciekla     => MouseState.Zlowroga,
+            _                      => MouseState.Normal
+        };
+        SetState(prev);
+        _badStateTimer   = 0f;
+        _inactivityTimer = 0f;
     }
 
-    public void Feed(bool isGood)
-    {
-        if (!isGood) { ApplyNegativeAction(); return; }
-        bool wasHungry = _hunger >= HungerNormalMax;
-        _hunger = 0f;
-        EnterCollectibleState(wasHungry ? MouseState.Szczesliwa : MouseState.Grobol);
-    }
-
-    public void TriggerRose()     => EnterCollectibleState(MouseState.Kochana);
-    public void TriggerVacation() => EnterCollectibleState(MouseState.Wakacyjna);
-
-    public void TriggerBike()
-    {
-        _dirt = 100f;
-        EnterCollectibleState(MouseState.Brudna);
-    }
-
-    public void TriggerMakapaka() => EnterCollectibleState(MouseState.Makapaka);
-
-    public void TriggerPirat()
-    {
-        if (_state != MouseState.Pirat)
-            EnterCollectibleState(MouseState.Pirat);
-    }
-
-    public void ClearPirat()
-    {
-        if (_state == MouseState.Pirat) ReturnToBase();
-    }
-
-    public void TriggerAlarmWakeup(AlarmType alarm)
-    {
-        EnterCollectibleState(alarm == AlarmType.Early
-            ? MouseState.Niewyspana
-            : MouseState.WesolaPoPobudce);
-    }
-
-    public void TriggerKitchenEntry()
-    {
-        if (!IsBadState() && !IsCollectible())
-            SetState(MouseState.Myszkujaca);
-    }
-
-    public void TriggerKitchenExit() => ReturnToBase();
-
-    public void TriggerMusic()
-    {
-        if (!IsBadState())
-            EnterCollectibleState(MouseState.Tanczaca);
-    }
-
-    public void TriggerWash()
-    {
-        bool wasDirty = _dirt >= DirtDirtyThreshold;
-        _dirt = 0f;
-        if (wasDirty) EnterCollectibleState(MouseState.Pachnaca);
-    }
-
-    public void TriggerCzonstkowa() => EnterCollectibleState(MouseState.Czonstkowa);
-
-    void EnterCollectibleState(MouseState s)
+    void EnterCollectible(MouseState s)
     {
         SetState(s);
         _collectibleTimer = 0f;
+        _inactivityTimer  = 0f;
         TryUnlock(s);
     }
 
-    void TryUnlock(MouseState s)
+    void EnterObraziona()
     {
-        int idx = CollectibleIndex(s);
-        if (idx < 0 || idx >= _unlocked.Length) return;
-        bool isFirst = !_unlocked[idx];
-        _unlocked[idx] = true;
-        GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
+        SetState(MouseState.Obrazona);
+        _obrazonaTimer   = 0f;
+        _inactivityTimer = 0f;
+        TryUnlock(MouseState.Obrazona);
     }
 
     void ReturnToBase()
     {
-        SetState(_hunger < HungerNormalMax ? MouseState.Normal : MouseState.Hungry);
+        MouseState target = IsHungry()  ? MouseState.Hungry    :
+                            IsWanting() ? MouseState.Chcaca    :
+                            IsDirty()   ? MouseState.Smrodliwa :
+                                          MouseState.Normal;
+        SetState(target);
+        _collectibleTimer = 0f;
+        _inactivityTimer  = 0f;
     }
 
-    public static int CollectibleIndex(MouseState s) => s switch
-    {
-        MouseState.Kochana         => 0,
-        MouseState.Szczesliwa      => 1,
-        MouseState.Grobol          => 2,
-        MouseState.Obrazona        => 3,
-        MouseState.Wakacyjna       => 4,
-        MouseState.Brudna          => 5,
-        MouseState.Makapaka        => 6,
-        MouseState.Pirat           => 7,
-        MouseState.Niewyspana      => 8,
-        MouseState.WesolaPoPobudce => 9,
-        MouseState.Myszkujaca      => 10,
-        MouseState.Tanczaca        => 11,
-        MouseState.Pachnaca        => 12,
-        MouseState.Czonstkowa      => 13,
-        MouseState.Smutna          => 14,
-        MouseState.Zlowroga        => 15,
-        MouseState.Sciekla         => 16,
-        MouseState.Hungry          => 17,
-        MouseState.Rozochocona     => 18,
-        MouseState.Chcaca          => 19,
-        MouseState.Zrozpaczona     => 20,
-        _                          => -1
-    };
+    void ResetAllStats() => _hunger = _attention = _dirt = 0f;
 
     void SetState(MouseState s)
     {
@@ -348,50 +286,270 @@ public class MouseStateManager : MonoBehaviour
         GameEvents.RaiseMouseStateChanged(s);
     }
 
+    void TryUnlock(MouseState s)
+    {
+        int idx = CollectibleIndex(s);
+        if (idx < 0 || idx >= UnlockedSize) return;
+        bool isFirst = !_unlocked[idx];
+        _unlocked[idx] = true;
+        GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
+    }
+
     void TriggerGameOver()
     {
-        _timersRunning = false;
+        _running = false;
         GameEvents.RaiseGameOver();
         GameEvents.RaiseCutsceneRequested("GameOver");
     }
 
-    public void PauseTimers()  => _timersRunning = false;
-    public void ResumeTimers() => _timersRunning = true;
+    void OnActivity() => _inactivityTimer = 0f;
 
-    public void ResetForNewDay()
+    // Helpery do sprawdzenia fazy Obrażonej
+    bool IsBlocked()      => _state == MouseState.Obrazona && _obrazonaTimer < ObrazedBlockDur;
+    bool IsGracePeriod()  => _state == MouseState.Obrazona && _obrazonaTimer >= ObrazedBlockDur;
+
+    // Podczas fazy łaski: złe akcje → Złowroga; dobre/neutralne → ignorowane (return true = przerwij)
+    bool HandleGrace(bool isEvil = false)
     {
-        _hunger = _dirt = 0f;
-        _recoveryCounter = 0;
-        _randomStateTimer = _badStateTimer = _collectibleTimer = _tempStateTimer = 0f;
-        SetState(MouseState.Normal);
-        _timersRunning = true;
+        if (!IsGracePeriod()) return false;
+        if (isEvil) EnterBadState(MouseState.Zlowroga);
+        return true;
     }
 
-    public void ApplySaveData(SaveData d)
+    // Rozochocona + zła akcja → Obrażona
+    bool HandleRozochwana()
     {
-        _hunger = d.hunger;
-        _dirt   = d.dirt;
-        _state  = (MouseState)d.mouseStateValue;
-
-        // Pad saved array to current size in case save was from an older version
-        var saved = d.unlockedMouseTypes;
-        _unlocked = new bool[21];
-        for (int i = 0; i < Mathf.Min(saved.Length, _unlocked.Length); i++)
-            _unlocked[i] = saved[i];
-
-        GameEvents.RaiseMouseStateChanged(_state);
+        if (_state != MouseState.Rozochocona) return false;
+        EnterObraziona();
+        return true;
     }
 
-    public void WriteSaveData(SaveData d)
+    // ── Mapowanie galerii ────────────────────────────────────────────────
+
+    public static int CollectibleIndex(MouseState s) => s switch
     {
-        d.hunger             = _hunger;
-        d.dirt               = _dirt;
-        d.mouseStateValue    = (int)_state;
-        d.unlockedMouseTypes = (bool[])_unlocked.Clone();
+        MouseState.Heppi           => 0,
+        MouseState.Czonstkujaca    => 1,
+        MouseState.Grobol          => 2,
+        MouseState.Obrazona        => 3,
+        MouseState.Paczurowa       => 4,
+        MouseState.Smrodliwa       => 5,
+        MouseState.Makapaka        => 6,
+        MouseState.Pirat           => 7,
+        MouseState.Niewyspana      => 8,
+        MouseState.WesolaPoPobudce => 9,
+        MouseState.Myszkujaca      => 10,
+        MouseState.Tanczaca        => 11,
+        MouseState.Pachnaca        => 12,
+        MouseState.Czonstkowa      => 13,
+        MouseState.Pumpuzka        => 14,
+        MouseState.Roztopiona      => 15,
+        MouseState.Spankowa        => 16,
+        MouseState.Czosnkowa       => 17,
+        MouseState.Zakochana       => 18,
+        MouseState.Rozochocona     => 19,
+        MouseState.Hungry          => 20,
+        MouseState.Chcaca          => 21,
+        MouseState.Smutna          => 22,
+        MouseState.Zrozpaczona     => 23,
+        MouseState.Zlowroga        => 24,
+        MouseState.Sciekla         => 25,
+        MouseState.ScieklaII       => 26,
+        _                          => -1
+    };
+
+    // ── Akcje gracza ─────────────────────────────────────────────────────
+
+    public void TriggerHug()
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+
+        if (IsGracePeriod())        { _obrazonaTimer = 0f; ReturnToBase(); return; }
+        if (HandleRozochwana())     return;
+        if (IsBadState(_state))     { RecoverBadState(); return; }
+        if (_state == MouseState.Hungry || _state == MouseState.Smrodliwa) return;
+        if (_state == MouseState.Chcaca) { _attention = 0f; EnterCollectible(MouseState.Pumpuzka); return; }
+        EnterCollectible(MouseState.Heppi);
     }
 
-    public MouseState CurrentState => _state;
-    public bool[]     UnlockedTypes => _unlocked;
-    public float      Hunger        => _hunger;
-    public float      Dirt          => _dirt;
+    public void TriggerKiss()
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+
+        if (IsGracePeriod())        { _obrazonaTimer = 0f; ReturnToBase(); return; }
+        if (HandleRozochwana())     return;
+        if (IsBadState(_state))     { RecoverBadState(); return; }
+        if (IsNeedState(_state))    return; // całowanie nie rozwiązuje żadnego stanu potrzeby
+        EnterCollectible(MouseState.Heppi);
+    }
+
+    public void Feed(bool isGood)
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+
+        if (HandleGrace(isEvil: !isGood)) return; // złe jedzenie w łasce → Złowroga; dobre → ignorowane
+        if (HandleRozochwana()) return;
+        if (IsBadState(_state)) return;
+
+        if (!isGood) { EnterObraziona(); return; }
+
+        if (_state == MouseState.Hungry)
+        {
+            _hunger = 0f;
+            EnterCollectible(MouseState.Czonstkujaca);
+            return;
+        }
+        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
+        EnterCollectible(MouseState.Grobol);
+    }
+
+    public void TriggerWash()
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+
+        if (HandleRozochwana()) return;
+        if (IsBadState(_state)) return;
+
+        if (_state == MouseState.Smrodliwa) { _dirt = 0f; EnterCollectible(MouseState.Pachnaca); return; }
+        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
+        // czysta mysz — brak efektu
+    }
+
+    public void TriggerBike()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        if (_dirt >= NeedThreshold) return; // już brudna — brak efektu
+
+        _dirt = NeedThreshold;
+        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
+        EnterNeedState(MouseState.Smrodliwa);
+    }
+
+    public void TriggerCrumbs()
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+        if (HandleGrace(isEvil: true)) return; // okruszki w łasce → Złowroga
+        if (IsBadState(_state)) return;
+        EnterObraziona();
+    }
+
+    public void TriggerMusic(bool isGood)
+    {
+        if (IsBlocked()) return;
+        OnActivity();
+
+        if (HandleGrace(isEvil: !isGood)) return; // zła muzyka w łasce → Złowroga; dobra → ignorowane
+        if (!isGood) { if (!IsBadState(_state)) EnterObraziona(); return; }
+        if (HandleRozochwana()) return;
+        if (IsBadState(_state)) return;
+        EnterCollectible(MouseState.Tanczaca);
+    }
+
+    public void TriggerCandles()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Rozochocona);
+    }
+
+    public void TriggerBump()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        // Bump NIE wywołuje HandleRozochwana — to jedyna poprawna akcja w Rozochocona
+        if (_state == MouseState.Rozochocona) { EnterCollectible(MouseState.Roztopiona); return; }
+        // z innego stanu — brak efektu
+    }
+
+    public void TriggerGarlic()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Czosnkowa);
+    }
+
+    public void TriggerRose()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Zakochana);
+        GameEvents.RaiseCutsceneRequested("Rose");
+    }
+
+    public void TriggerVacation()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Paczurowa);
+        GameEvents.RaiseCutsceneRequested("Vacation");
+    }
+
+    public void TriggerSleep()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Spankowa);
+    }
+
+    public void TriggerMakapaka()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Makapaka);
+    }
+
+    public void TriggerCzonstkowa()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        EnterCollectible(MouseState.Czonstkowa);
+    }
+
+    public void TriggerPirat()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
+        if (HandleRozochwana()) return;
+        if (_state != MouseState.Pirat) EnterCollectible(MouseState.Pirat);
+    }
+
+    public void ClearPirat()
+    {
+        OnActivity();
+        if (_state == MouseState.Pirat) ReturnToBase();
+    }
+
+    public void TriggerKitchenEntry()
+    {
+        OnActivity();
+        if (IsBadState(_state) || IsNeedState(_state) || _state == MouseState.Obrazona) return;
+        if (HandleRozochwana()) return;
+        SetState(MouseState.Myszkujaca);
+    }
+
+    public void TriggerKitchenExit()
+    {
+        OnActivity();
+        if (_state == MouseState.Myszkujaca) ReturnToBase();
+    }
+
+    public void TriggerAlarmWakeup(AlarmType alarm)
+    {
+        MouseState s = alarm == AlarmType.Early ? MouseState.Niewyspana : MouseState.WesolaPoPobudce;
+        EnterCollectible(s);
+    }
 }
