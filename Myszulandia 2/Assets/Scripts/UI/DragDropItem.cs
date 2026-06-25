@@ -58,6 +58,7 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             case ItemType.MealBad:  InventoryManager.Instance.TryUseMealOnMouse(false); break;
             case ItemType.Rose:     InventoryManager.Instance.UseRoseOnMouse();         break;
             case ItemType.Ticket:   InventoryManager.Instance.UseTicketOnMouse();       break;
+            case ItemType.Garlic:   InventoryManager.Instance.UseGarlicOnMouse();       break;
         }
     }
 }

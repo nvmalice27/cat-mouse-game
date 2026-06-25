@@ -13,6 +13,7 @@ public class SaveData
     public int    crumbsTotal         = 0;
     public int    crumbsInInventory   = 0;
     public int    socksCollected      = 0;
+    public int    garlicInInventory   = 0;
     public int    alarmTypeValue      = 0;
     public bool   bedMade             = false;
 }

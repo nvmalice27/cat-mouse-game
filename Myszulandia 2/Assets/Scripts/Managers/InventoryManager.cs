@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket }
+public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic }
 
 [System.Serializable]
 public class InventoryItem
@@ -17,16 +17,20 @@ public class InventoryManager : MonoBehaviour
     int _crumbsTotal;
     int _crumbsInInventory;
     int _socksCollected;
+    int _garlicInInventory;
     readonly List<InventoryItem> _items = new();
 
     // Stan dzienny — co zostało zebrane dziś (resetuje się z nowym dniem)
     bool[] _sockHarvestedToday        = new bool[3];
     bool[] _ingredientHarvestedToday  = new bool[3];
     bool   _cookedToday;
+    bool   _garlicHarvestedToday;
 
-    public int CrumbsTotal       => _crumbsTotal;
-    public int CrumbsInInventory => _crumbsInInventory;
-    public int SocksCollected    => _socksCollected;
+    public int  CrumbsTotal         => _crumbsTotal;
+    public int  CrumbsInInventory   => _crumbsInInventory;
+    public int  SocksCollected      => _socksCollected;
+    public int  GarlicInInventory   => _garlicInInventory;
+    public bool IsGarlicHarvested   => _garlicHarvestedToday;
     public IReadOnlyList<InventoryItem> Items => _items;
 
     // Accessory stanu dziennego
@@ -108,6 +112,22 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
+    public void CollectGarlic()
+    {
+        _garlicHarvestedToday = true;
+        _garlicInInventory++;
+        GameEvents.RaiseInventoryChanged();
+    }
+
+    public bool UseGarlicOnMouse()
+    {
+        if (_garlicInInventory <= 0) return false;
+        _garlicInInventory--;
+        GameEvents.RaiseInventoryChanged();
+        MouseStateManager.Instance.TriggerGarlic();
+        return true;
+    }
+
     void AddItem(ItemType t)
     {
         var existing = _items.Find(i => i.type == t);
@@ -132,22 +152,25 @@ public class InventoryManager : MonoBehaviour
         _sockHarvestedToday       = new bool[3];
         _ingredientHarvestedToday = new bool[3];
         _cookedToday              = false;
-        // _socksCollected NIE jest zerowane — skarpety w ekwipunku przechodzą na kolejny dzień
+        _garlicHarvestedToday     = false;
+        // _socksCollected / _garlicInInventory NIE są zerowane — przedmioty przechodzą na kolejny dzień
         GameEvents.RaiseSocksChanged(_socksCollected);
         GameEvents.RaiseInventoryChanged();
     }
 
     public void ApplySaveData(SaveData d)
     {
-        _crumbsTotal      = d.crumbsTotal;
+        _crumbsTotal       = d.crumbsTotal;
         _crumbsInInventory = d.crumbsInInventory;
-        _socksCollected   = d.socksCollected;
+        _socksCollected    = d.socksCollected;
+        _garlicInInventory = d.garlicInInventory;
     }
 
     public void WriteSaveData(SaveData d)
     {
-        d.crumbsTotal      = _crumbsTotal;
+        d.crumbsTotal       = _crumbsTotal;
         d.crumbsInInventory = _crumbsInInventory;
-        d.socksCollected   = _socksCollected;
+        d.socksCollected    = _socksCollected;
+        d.garlicInInventory = _garlicInInventory;
     }
 }

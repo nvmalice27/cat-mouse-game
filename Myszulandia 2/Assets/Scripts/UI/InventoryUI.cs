@@ -12,6 +12,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Sprite     mealBadSprite;
     [SerializeField] Sprite     roseSprite;
     [SerializeField] Sprite     ticketSprite;
+    [SerializeField] Sprite     garlicSprite;
 
     void OnEnable()
     {
@@ -38,6 +39,9 @@ public class InventoryUI : MonoBehaviour
         if (mgr.CrumbsInInventory > 0)
             AddSlot(ItemType.Crumb, crumbSprite, mgr.CrumbsInInventory);
 
+        if (mgr.GarlicInInventory > 0)
+            AddSlot(ItemType.Garlic, garlicSprite, mgr.GarlicInInventory);
+
         if (mgr.SocksCollected > 0)
             AddSlot(ItemType.Sock, sockSprite, mgr.SocksCollected);
 
@@ -49,6 +53,7 @@ public class InventoryUI : MonoBehaviour
                 ItemType.MealBad  => mealBadSprite,
                 ItemType.Rose     => roseSprite,
                 ItemType.Ticket   => ticketSprite,
+                ItemType.Garlic   => garlicSprite,
                 _                 => null
             };
             if (icon != null) AddSlot(item.type, icon, item.quantity);
