@@ -7,11 +7,11 @@ public class RadioUI : MonoBehaviour
     public void Open()  => panel.SetActive(true);
     public void Close() { if (panel != null) panel.SetActive(false); }
 
-    // Pop / Spokojna / Klasyczna → mysz tańczy (Tanczaca)
-    public void PlayPop()       { MouseStateManager.Instance.TriggerMusic(); Close(); }
-    public void PlaySpokojna()  { MouseStateManager.Instance.TriggerMusic(); Close(); }
-    public void PlayKlasyczna() { MouseStateManager.Instance.TriggerMusic(); Close(); }
+    // Dobra muzyka → Tańcząca
+    public void PlayPop()       { MouseStateManager.Instance.TriggerMusic(true);  Close(); }
+    public void PlaySpokojna()  { MouseStateManager.Instance.TriggerMusic(true);  Close(); }
+    public void PlayKlasyczna() { MouseStateManager.Instance.TriggerMusic(true);  Close(); }
 
-    // Heavy Metal → pogarsza nastrój (jak okruszki ale bez jedzenia)
-    public void PlayMetal()     { MouseStateManager.Instance.ApplyNegativeAction(); Close(); }
+    // Zła muzyka → Obrażona
+    public void PlayMetal()     { MouseStateManager.Instance.TriggerMusic(false); Close(); }
 }
