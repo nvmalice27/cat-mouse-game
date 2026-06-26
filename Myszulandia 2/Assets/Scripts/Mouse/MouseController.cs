@@ -6,7 +6,6 @@ public class MouseController : MonoBehaviour
     [SerializeField] Animator        animator;
     [SerializeField] MouseTypeSO[]   mouseTypes;
     [SerializeField] Sprite          normalSprite;
-    [SerializeField] Sprite          hungrySprite;
     [SerializeField] SpriteRenderer  dirtyOverlay;
     [SerializeField] MouseActionMenu actionMenu;
 
@@ -27,8 +26,7 @@ public class MouseController : MonoBehaviour
         }
         else
         {
-            spriteRenderer.sprite = MouseStateManager.Instance.IsHungry()
-                ? hungrySprite : normalSprite;
+            spriteRenderer.sprite = normalSprite;
         }
 
         spriteRenderer.color = StateColor(state);
