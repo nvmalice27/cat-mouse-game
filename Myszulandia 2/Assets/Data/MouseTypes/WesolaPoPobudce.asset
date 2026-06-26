@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WesolaPoPobudce
   m_EditorClassIdentifier: 
   displayName: "Weso\u0142a po pobudce"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c4bc46b645fcc8046b18e05fd9eee2be, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: WesolaPoPobudce

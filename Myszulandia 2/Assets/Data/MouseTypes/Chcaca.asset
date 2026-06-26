@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chcaca
   m_EditorClassIdentifier: 
   displayName: "Chc\u0105ca"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3c5812c838b3d7448b46862d54c436ce, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Chcaca

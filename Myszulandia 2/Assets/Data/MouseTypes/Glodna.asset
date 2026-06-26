@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Glodna
   m_EditorClassIdentifier: 
   displayName: "G\u0142odna"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5a79f694054304548b8dc165d215833b, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Glodna

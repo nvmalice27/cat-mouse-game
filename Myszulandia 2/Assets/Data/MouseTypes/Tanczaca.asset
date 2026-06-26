@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tanczaca
   m_EditorClassIdentifier: 
   displayName: "Ta\u0144cz\u0105ca"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: de3e2cc6f6a6421429d5e6f343496fea, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Tanczaca

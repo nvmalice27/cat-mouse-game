@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Makapaka
   m_EditorClassIdentifier: 
   displayName: Makapaka
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 6973adb4c41c7ce48ac3f1db1a0d1f07, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Makapaka

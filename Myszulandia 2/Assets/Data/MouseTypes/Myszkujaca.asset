@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Myszkujaca
   m_EditorClassIdentifier: 
   displayName: "Myszkuj\u0105ca"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5d203f759b52952439d6eb6c2d9596b6, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Myszkujaca

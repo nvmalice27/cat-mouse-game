@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pumpuzka
   m_EditorClassIdentifier: 
   displayName: "Pumpu\u017Cka"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a5787fb8d57c716418ad2d0dcfc6b225, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Pumpuzka

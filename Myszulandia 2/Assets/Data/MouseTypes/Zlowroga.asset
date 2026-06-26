@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Zlowroga
   m_EditorClassIdentifier: 
   displayName: "Z\u0142owroga"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c9485df12f0ef984d936ccfb93a0c78b, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Zlowroga

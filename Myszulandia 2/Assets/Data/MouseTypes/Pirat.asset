@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pirat
   m_EditorClassIdentifier: 
   displayName: Pirat
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 78ed20372285eba4aa94f82c0c56c11e, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Pirat

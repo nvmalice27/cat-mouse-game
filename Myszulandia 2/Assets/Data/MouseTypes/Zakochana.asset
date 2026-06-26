@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Zakochana
   m_EditorClassIdentifier: 
   displayName: Zakochana
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: d08acb1c881817c4f9ca13a6a6b5f3e9, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Zakochana

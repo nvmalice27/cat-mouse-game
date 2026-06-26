@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Niewyspana
   m_EditorClassIdentifier: 
   displayName: Niewyspana
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a7d3cd47bbcb66f4dad6be29ed1f740b, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Niewyspana

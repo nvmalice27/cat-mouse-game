@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Heppi
   m_EditorClassIdentifier: 
   displayName: Heppi
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 2dd0429c4a2c0274589f82bea2ae13d0, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Heppi

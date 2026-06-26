@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sciekla
   m_EditorClassIdentifier: 
   displayName: "\u015Aciek\u0142a"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 4f44878fd52545c498e62e70b7f72072, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Sciekla

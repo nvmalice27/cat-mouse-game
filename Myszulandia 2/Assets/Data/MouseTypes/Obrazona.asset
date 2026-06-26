@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Obrazona
   m_EditorClassIdentifier: 
   displayName: "Obra\u017Cona"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: fddef2bd2823ffa41a95b839dcc7d82f, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Obrazona

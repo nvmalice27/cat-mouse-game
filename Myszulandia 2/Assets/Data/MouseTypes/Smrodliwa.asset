@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Smrodliwa
   m_EditorClassIdentifier: 
   displayName: Smrodliwa
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 9df4e61c70abe6040bcdecf0d623e1ab, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Smrodliwa

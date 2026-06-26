@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Czonstkujaca
   m_EditorClassIdentifier: 
   displayName: "Czonstkuj\u0105ca"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: c1f2b60b581d6614b817976fec35beae, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Czonstkujaca

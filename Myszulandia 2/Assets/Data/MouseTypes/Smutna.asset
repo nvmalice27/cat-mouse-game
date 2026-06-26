@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Smutna
   m_EditorClassIdentifier: 
   displayName: Smutna
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b1be8327720590a41b777047d73b1da0, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Smutna

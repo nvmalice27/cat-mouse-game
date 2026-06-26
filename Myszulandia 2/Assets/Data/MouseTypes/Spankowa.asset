@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spankowa
   m_EditorClassIdentifier: 
   displayName: Spankowa
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5866946a811a8bd48aaff01533061601, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Spankowa

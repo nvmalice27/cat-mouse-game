@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grobol
   m_EditorClassIdentifier: 
   displayName: Grob'ol
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: ea5fc8d003fc27c4790fda4a6edbe746, type: 3}
   animationClip: {fileID: 0}
   format: 0
   cutsceneKey: Grobol
