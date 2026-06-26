@@ -364,6 +364,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerHug()
     {
+        Debug.Log($"[TriggerHug] stan={_state} zablok={IsBlocked()} laska={IsGracePeriod()} zly={IsBadState(_state)}");
         if (IsBlocked()) return;
         OnActivity();
 
@@ -371,7 +372,7 @@ public class MouseStateManager : MonoBehaviour
         if (HandleRozochwana())     return;
         if (IsBadState(_state))     { RecoverBadState(); return; }
         if (_state == MouseState.Hungry || _state == MouseState.Smrodliwa) return;
-        if (_state == MouseState.Chcaca) { ResetAllStats(); EnterCollectible(MouseState.Pumpuzka); return; }
+        if (_state == MouseState.Chcaca) { ResetAllStats(); EnterCollectible(MouseState.Pumpuzka); Debug.Log("[TriggerHug] → Pumpuzka"); return; }
         EnterCollectible(MouseState.Heppi);
     }
 
