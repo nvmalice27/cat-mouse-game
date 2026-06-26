@@ -140,8 +140,8 @@ public class MouseStateManager : MonoBehaviour
         // Stany pozytywne (normalne + kolekcjonerskie + potrzeb)
         if (IsPositiveOrNeed(_state))
         {
-            // Timer aktywności — tylko gdy nie w stanie potrzeby
-            if (!IsNeedState(_state))
+            // Timer aktywności — tylko w Normal (nie w potrzebie i nie w kolekcjonerskim)
+            if (!IsNeedState(_state) && !IsTimedCollectible(_state))
             {
                 _inactivityTimer += dt;
                 if (_inactivityTimer >= InactivityTimeout)
