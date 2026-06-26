@@ -28,7 +28,7 @@ public class MouseActionMenu : MonoBehaviour
             bumpButton.SetActive(state == MouseState.Rozochocona);
     }
 
-    public void OnHug()  { MouseStateManager.Instance.TriggerHug();  Hide(); }
+    public void OnHug()  { Debug.Log("[OnHug] wywołane"); MouseStateManager.Instance.TriggerHug();  Hide(); }
     public void OnKiss() { MouseStateManager.Instance.TriggerKiss(); Hide(); }
     public void OnBump() { MouseStateManager.Instance.TriggerBump(); Hide(); }
 }
