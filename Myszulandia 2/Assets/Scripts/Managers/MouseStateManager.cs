@@ -125,6 +125,10 @@ public class MouseStateManager : MonoBehaviour
             return;
         }
 
+        // W stanie kolekcjonerskim staty rosną, ale potrzeby nie wyzwalają się —
+        // wyzwolą się po ReturnToBase() gdy kolekcjonerski wygaśnie
+        if (IsTimedCollectible(_state)) return;
+
         // Nowy stan potrzeby — priorytet: głód, potem uwaga, potem brud
         if (_hunger    >= NeedThreshold) { EnterNeedState(MouseState.Hungry);    return; }
         if (_attention >= NeedThreshold) { EnterNeedState(MouseState.Chcaca);    return; }
