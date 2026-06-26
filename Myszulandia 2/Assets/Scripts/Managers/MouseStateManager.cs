@@ -5,7 +5,7 @@ public class MouseStateManager : MonoBehaviour
     public static MouseStateManager Instance { get; private set; }
 
     // Stałe — zmień StatGrowRate dla balansu
-    const float StatGrowRate        = 1f / 60f;
+    const float StatGrowRate        = 100f / 120f;  // 0→100 w 2 minuty
     const float NeedThreshold       = 60f;
     const float NeedMax             = 100f;
     const float InactivityTimeout   = 60f;
