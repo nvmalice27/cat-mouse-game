@@ -5,7 +5,9 @@ public class MouseStateManager : MonoBehaviour
     public static MouseStateManager Instance { get; private set; }
 
     // Stałe — zmień StatGrowRate dla balansu
-    const float StatGrowRate        = 100f / 120f;  // 0→100 w 2 minuty
+    const float HungerGrowRate      = 1.00f;          // 0→100 w ~100s
+    const float AttentionGrowRate   = 100f / 120f;   // 0→100 w 2 minuty (~0.83/s)
+    const float DirtGrowRate        = 1.30f;          // 0→100 w ~77s
     const float NeedThreshold       = 60f;
     const float NeedMax             = 100f;
     const float InactivityTimeout   = 60f;
@@ -101,9 +103,9 @@ public class MouseStateManager : MonoBehaviour
     {
         if (IsStatsFrozen()) return;
 
-        _hunger    = Mathf.Min(NeedMax, _hunger    + StatGrowRate * dt);
-        _attention = Mathf.Min(NeedMax, _attention + StatGrowRate * dt);
-        _dirt      = Mathf.Min(NeedMax, _dirt      + StatGrowRate * dt);
+        _hunger    = Mathf.Min(NeedMax, _hunger    + HungerGrowRate    * dt);
+        _attention = Mathf.Min(NeedMax, _attention + AttentionGrowRate * dt);
+        _dirt      = Mathf.Min(NeedMax, _dirt      + DirtGrowRate      * dt);
 
         // Którykolwiek stat = 100 → Złowroga
         if (_hunger >= NeedMax || _attention >= NeedMax || _dirt >= NeedMax)
