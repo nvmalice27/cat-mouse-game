@@ -369,15 +369,24 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerHug()
     {
-        Debug.Log($"[TriggerHug] stan={_state} zablok={IsBlocked()} laska={IsGracePeriod()} zly={IsBadState(_state)}");
+        Debug.Log($"[TriggerHug] stan={_state} uwaga={_attention:F1} zablok={IsBlocked()} zly={IsBadState(_state)}");
         if (IsBlocked()) return;
         OnActivity();
 
-        if (IsGracePeriod())        { _obrazonaTimer = 0f; ReturnToBase(); return; }
-        if (HandleRozochwana())     return;
-        if (IsBadState(_state))     { RecoverBadState(); return; }
+        if (IsGracePeriod())    { _obrazonaTimer = 0f; ReturnToBase(); return; }
+        if (HandleRozochwana()) return;
+        if (IsBadState(_state)) { RecoverBadState(); return; }
+
+        // Uwaga >= 60 → Pumpużka (jak brud >= 60 + mycie → Pachnąca)
+        if (_attention >= NeedThreshold)
+        {
+            Debug.Log("[TriggerHug] → Pumpuzka");
+            ResetAllStats();
+            EnterCollectible(MouseState.Pumpuzka);
+            return;
+        }
+
         if (_state == MouseState.Hungry || _state == MouseState.Smrodliwa) return;
-        if (_state == MouseState.Chcaca) { ResetAllStats(); EnterCollectible(MouseState.Pumpuzka); Debug.Log("[TriggerHug] → Pumpuzka"); return; }
         EnterCollectible(MouseState.Heppi);
     }
 
