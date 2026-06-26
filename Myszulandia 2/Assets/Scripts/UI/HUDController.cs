@@ -36,8 +36,8 @@ public class HUDController : MonoBehaviour
     {
         var mgr = MouseStateManager.Instance;
         if (mgr == null) return;
-        if (hungerText    != null) hungerText.text    = $"Głód:  {Mathf.FloorToInt(mgr.Hunger)}/100";
-        if (attentionText != null) attentionText.text = $"Uwaga: {Mathf.FloorToInt(mgr.Attention)}/100";
-        if (dirtText      != null) dirtText.text      = $"Brud:  {Mathf.FloorToInt(mgr.Dirt)}/100";
+        if (hungerText    != null) hungerText.text    = $"Głód:  {mgr.Hunger:F1}/100";
+        if (attentionText != null) attentionText.text = $"Uwaga: {mgr.Attention:F1}/100";
+        if (dirtText      != null) dirtText.text      = $"Brud:  {mgr.Dirt:F1}/100";
     }
 }
