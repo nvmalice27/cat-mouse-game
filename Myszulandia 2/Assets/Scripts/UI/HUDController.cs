@@ -5,17 +5,22 @@ public class HUDController : MonoBehaviour
 {
     [SerializeField] TMP_Text coinsText;
     [SerializeField] TMP_Text dayText;
+    [SerializeField] TMP_Text hungerText;
+    [SerializeField] TMP_Text attentionText;
+    [SerializeField] TMP_Text dirtText;
 
     void OnEnable()
     {
         GameEvents.OnCoinsChanged += SetCoins;
         GameEvents.OnDayChanged   += SetDay;
+        InvokeRepeating(nameof(RefreshStats), 0f, 0.5f);
     }
 
     void OnDisable()
     {
         GameEvents.OnCoinsChanged -= SetCoins;
         GameEvents.OnDayChanged   -= SetDay;
+        CancelInvoke(nameof(RefreshStats));
     }
 
     void Start()
@@ -26,4 +31,13 @@ public class HUDController : MonoBehaviour
 
     void SetCoins(int v) => coinsText.text = $"Monety: {v}";
     void SetDay(int v)   => dayText.text   = $"Dzień {v}";
+
+    void RefreshStats()
+    {
+        var mgr = MouseStateManager.Instance;
+        if (mgr == null) return;
+        if (hungerText    != null) hungerText.text    = $"Głód:  {Mathf.FloorToInt(mgr.Hunger)}/100";
+        if (attentionText != null) attentionText.text = $"Uwaga: {Mathf.FloorToInt(mgr.Attention)}/100";
+        if (dirtText      != null) dirtText.text      = $"Brud:  {Mathf.FloorToInt(mgr.Dirt)}/100";
+    }
 }
