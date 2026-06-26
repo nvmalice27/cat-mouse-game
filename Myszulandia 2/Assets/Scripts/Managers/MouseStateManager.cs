@@ -159,7 +159,8 @@ public class MouseStateManager : MonoBehaviour
                 if (_collectibleTimer >= CollectibleDuration)
                 {
                     _collectibleTimer = 0f;
-                    ReturnToBase();
+                    ResetAllStats();
+                    SetState(MouseState.Normal);
                 }
             }
             return;
