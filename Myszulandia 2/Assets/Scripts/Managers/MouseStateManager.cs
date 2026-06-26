@@ -371,7 +371,7 @@ public class MouseStateManager : MonoBehaviour
         if (HandleRozochwana())     return;
         if (IsBadState(_state))     { RecoverBadState(); return; }
         if (_state == MouseState.Hungry || _state == MouseState.Smrodliwa) return;
-        if (_state == MouseState.Chcaca) { _attention = 0f; EnterCollectible(MouseState.Pumpuzka); return; }
+        if (_state == MouseState.Chcaca) { ResetAllStats(); EnterCollectible(MouseState.Pumpuzka); return; }
         EnterCollectible(MouseState.Heppi);
     }
 
@@ -400,7 +400,7 @@ public class MouseStateManager : MonoBehaviour
 
         if (_state == MouseState.Hungry)
         {
-            _hunger = 0f;
+            ResetAllStats();
             EnterCollectible(MouseState.Czonstkujaca);
             return;
         }
@@ -416,7 +416,7 @@ public class MouseStateManager : MonoBehaviour
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) return;
 
-        if (_state == MouseState.Smrodliwa) { _dirt = 0f; EnterCollectible(MouseState.Pachnaca); return; }
+        if (_state == MouseState.Smrodliwa) { ResetAllStats(); EnterCollectible(MouseState.Pachnaca); return; }
         // czysta mysz — brak efektu
     }
 
