@@ -22,6 +22,10 @@ public class MouseStateManager : MonoBehaviour
     float _attention;
     float _dirt;
 
+    // Warunki środowiskowe
+    bool  _musicPlaying;
+    bool  _candlesLit;
+
     // Stan
     MouseState _state    = MouseState.Normal;
     bool[]     _unlocked = new bool[UnlockedSize];
@@ -220,6 +224,8 @@ public class MouseStateManager : MonoBehaviour
 
     void EnterBadState(MouseState bad)
     {
+        _candlesLit   = false;
+        _musicPlaying = false;
         ResetAllStats();
         SetState(bad);
         _badStateTimer    = 0f;
@@ -275,6 +281,8 @@ public class MouseStateManager : MonoBehaviour
 
     void ReturnToBase()
     {
+        _candlesLit   = false;
+        _musicPlaying = false;
         MouseState target = IsHungry()  ? MouseState.Hungry    :
                             IsWanting() ? MouseState.Chcaca    :
                             IsDirty()   ? MouseState.Smrodliwa :
@@ -300,6 +308,8 @@ public class MouseStateManager : MonoBehaviour
         bool isFirst = !_unlocked[idx];
         _unlocked[idx] = true;
         GameEvents.RaiseMouseTypeUnlocked(idx, isFirst);
+        if (isFirst && SaveManager.Instance != null)
+            SaveManager.Instance.Save();
     }
 
     void TriggerGameOver()
@@ -377,8 +387,8 @@ public class MouseStateManager : MonoBehaviour
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) { RecoverBadState(); return; }
 
-        // Uwaga >= 60 → Pumpużka (jak brud >= 60 + mycie → Pachnąca)
-        if (_attention >= NeedThreshold)
+        // Chcąca (lub uwaga >= 60) → Pumpużka
+        if (_state == MouseState.Chcaca || _attention >= NeedThreshold)
         {
             Debug.Log("[TriggerHug] → Pumpuzka");
             ResetAllStats();
@@ -407,8 +417,9 @@ public class MouseStateManager : MonoBehaviour
         if (IsBlocked()) return;
         OnActivity();
 
-        if (HandleGrace(isEvil: !isGood)) return; // złe jedzenie w łasce → Złowroga; dobre → ignorowane
+        if (HandleGrace(isEvil: !isGood)) return;
         if (HandleRozochwana()) return;
+        if (!isGood && IsBadState(_state)) { AdvanceBadState(); return; }
         if (IsBadState(_state)) return;
 
         if (!isGood) { EnterObraziona(); return; }
@@ -451,8 +462,8 @@ public class MouseStateManager : MonoBehaviour
     {
         if (IsBlocked()) return;
         OnActivity();
-        if (HandleGrace(isEvil: true)) return; // okruszki w łasce → Złowroga
-        if (IsBadState(_state)) return;
+        if (HandleGrace(isEvil: true)) return;
+        if (IsBadState(_state)) { AdvanceBadState(); return; }
         EnterObraziona();
     }
 
@@ -462,10 +473,20 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
 
         if (HandleGrace(isEvil: !isGood)) return; // zła muzyka w łasce → Złowroga; dobra → ignorowane
-        if (!isGood) { if (!IsBadState(_state)) EnterObraziona(); return; }
+        if (!isGood)
+        {
+            _musicPlaying = false;
+            if (IsBadState(_state)) { AdvanceBadState(); return; }
+            EnterObraziona();
+            return;
+        }
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) return;
-        EnterCollectible(MouseState.Tanczaca);
+        _musicPlaying = true;
+        if (_candlesLit)
+            EnterCollectible(MouseState.Rozochocona);
+        else
+            EnterCollectible(MouseState.Tanczaca);
     }
 
     public void TriggerCandles()
@@ -473,7 +494,17 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
-        EnterCollectible(MouseState.Rozochocona);
+        _candlesLit = true;
+        if (_musicPlaying)
+            EnterCollectible(MouseState.Rozochocona);
+        // bez radia — świeczka zapalona, czekamy na muzykę
+    }
+
+    public void TriggerStopMusic()
+    {
+        _musicPlaying = false;
+        if (_state == MouseState.Tanczaca)
+            ReturnToBase();
     }
 
     public void TriggerBump()

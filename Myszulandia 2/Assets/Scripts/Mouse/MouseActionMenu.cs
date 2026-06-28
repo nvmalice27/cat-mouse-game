@@ -9,7 +9,12 @@ public class MouseActionMenu : MonoBehaviour
     public void Hide()   => panel.SetActive(false);
     public void Toggle() => panel.SetActive(!panel.activeSelf);
 
-    void OnEnable()  => GameEvents.OnMouseStateChanged += OnStateChanged;
+    void OnEnable()
+    {
+        GameEvents.OnMouseStateChanged += OnStateChanged;
+        if (MouseStateManager.Instance != null)
+            RefreshBumpButton(MouseStateManager.Instance.CurrentState);
+    }
     void OnDisable() => GameEvents.OnMouseStateChanged -= OnStateChanged;
 
     void Start() => RefreshBumpButton(MouseStateManager.Instance.CurrentState);

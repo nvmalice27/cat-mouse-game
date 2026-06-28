@@ -14,4 +14,7 @@ public class RadioUI : MonoBehaviour
 
     // Zła muzyka → Obrażona
     public void PlayMetal()     { MouseStateManager.Instance.TriggerMusic(false); Close(); }
+
+    // Wyłącz muzykę — resetuje flagę muzyki w state managerze
+    public void StopMusic()     { MouseStateManager.Instance.TriggerStopMusic(); Close(); }
 }
