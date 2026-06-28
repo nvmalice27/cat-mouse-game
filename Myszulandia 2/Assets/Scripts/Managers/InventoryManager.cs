@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic }
+public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic, Drink, MouseBall }
 
 [System.Serializable]
 public class InventoryItem
@@ -18,6 +18,8 @@ public class InventoryManager : MonoBehaviour
     int _crumbsInInventory;
     int _socksCollected;
     int _garlicInInventory;
+    int _drinkInInventory;
+    int _mouseBallInInventory;
     readonly List<InventoryItem> _items = new();
 
     // Stan dzienny — co zostało zebrane dziś (resetuje się z nowym dniem)
@@ -30,6 +32,8 @@ public class InventoryManager : MonoBehaviour
     public int  CrumbsInInventory   => _crumbsInInventory;
     public int  SocksCollected      => _socksCollected;
     public int  GarlicInInventory   => _garlicInInventory;
+    public int  DrinkInInventory     => _drinkInInventory;
+    public int  MouseBallInInventory => _mouseBallInInventory;
     public bool IsGarlicHarvested   => _garlicHarvestedToday;
     public IReadOnlyList<InventoryItem> Items => _items;
 
@@ -128,6 +132,34 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
+    public void CollectDrink()
+    {
+        _drinkInInventory++;
+        GameEvents.RaiseInventoryChanged();
+    }
+
+    public void CollectMouseBall()
+    {
+        _mouseBallInInventory++;
+        GameEvents.RaiseInventoryChanged();
+    }
+
+    public void UseDrinkOnMouse()
+    {
+        if (_drinkInInventory <= 0) return;
+        _drinkInInventory--;
+        GameEvents.RaiseInventoryChanged();
+        MouseStateManager.Instance.TriggerDrinkOnMouse();
+    }
+
+    public void UseMouseBallOnMouse()
+    {
+        if (_mouseBallInInventory <= 0) return;
+        _mouseBallInInventory--;
+        GameEvents.RaiseInventoryChanged();
+        MouseStateManager.Instance.TriggerMouseBallOnMouse();
+    }
+
     void AddItem(ItemType t)
     {
         var existing = _items.Find(i => i.type == t);
@@ -160,17 +192,21 @@ public class InventoryManager : MonoBehaviour
 
     public void ApplySaveData(SaveData d)
     {
-        _crumbsTotal       = d.crumbsTotal;
-        _crumbsInInventory = d.crumbsInInventory;
-        _socksCollected    = d.socksCollected;
-        _garlicInInventory = d.garlicInInventory;
+        _crumbsTotal          = d.crumbsTotal;
+        _crumbsInInventory    = d.crumbsInInventory;
+        _socksCollected       = d.socksCollected;
+        _garlicInInventory    = d.garlicInInventory;
+        _drinkInInventory     = d.drinkInInventory;
+        _mouseBallInInventory = d.mouseBallInInventory;
     }
 
     public void WriteSaveData(SaveData d)
     {
-        d.crumbsTotal       = _crumbsTotal;
-        d.crumbsInInventory = _crumbsInInventory;
-        d.socksCollected    = _socksCollected;
-        d.garlicInInventory = _garlicInInventory;
+        d.crumbsTotal          = _crumbsTotal;
+        d.crumbsInInventory    = _crumbsInInventory;
+        d.socksCollected       = _socksCollected;
+        d.garlicInInventory    = _garlicInInventory;
+        d.drinkInInventory     = _drinkInInventory;
+        d.mouseBallInInventory = _mouseBallInInventory;
     }
 }

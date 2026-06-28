@@ -14,6 +14,8 @@ public class SaveData
     public int    crumbsInInventory   = 0;
     public int    socksCollected      = 0;
     public int    garlicInInventory   = 0;
+    public int    drinkInInventory    = 0;
+    public int    mouseBallInInventory = 0;
     public int    alarmTypeValue      = 0;
     public bool   bedMade             = false;
 }
