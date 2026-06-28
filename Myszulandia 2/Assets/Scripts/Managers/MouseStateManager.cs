@@ -386,17 +386,7 @@ public class MouseStateManager : MonoBehaviour
         if (IsGracePeriod())    { _obrazonaTimer = 0f; ReturnToBase(); return; }
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) { RecoverBadState(); return; }
-
-        // Chcąca (lub uwaga >= 60) → Pumpużka
-        if (_state == MouseState.Chcaca || _attention >= NeedThreshold)
-        {
-            Debug.Log("[TriggerHug] → Pumpuzka");
-            ResetAllStats();
-            EnterCollectible(MouseState.Pumpuzka);
-            return;
-        }
-
-        if (_state == MouseState.Hungry || _state == MouseState.Smrodliwa) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Heppi);
     }
 
@@ -430,7 +420,7 @@ public class MouseStateManager : MonoBehaviour
             EnterCollectible(MouseState.Czonstkujaca);
             return;
         }
-        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Grobol);
     }
 
@@ -443,6 +433,7 @@ public class MouseStateManager : MonoBehaviour
         if (IsBadState(_state)) return;
 
         if (_state == MouseState.Smrodliwa) { ResetAllStats(); EnterCollectible(MouseState.Pachnaca); return; }
+        if (IsNeedState(_state)) return;
         // czysta mysz — brak efektu
     }
 
@@ -451,10 +442,10 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
-        if (_dirt >= NeedThreshold) return; // już brudna — brak efektu
+        if (IsNeedState(_state)) return;
+        if (_dirt >= NeedThreshold) return;
 
         _dirt = NeedThreshold;
-        if (IsNeedState(_state)) { ResetAllStats(); EnterBadState(MouseState.Zlowroga); return; }
         EnterNeedState(MouseState.Smrodliwa);
     }
 
@@ -464,6 +455,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (HandleGrace(isEvil: true)) return;
         if (IsBadState(_state)) { AdvanceBadState(); return; }
+        if (IsNeedState(_state)) return;
         EnterObraziona();
     }
 
@@ -477,11 +469,13 @@ public class MouseStateManager : MonoBehaviour
         {
             _musicPlaying = false;
             if (IsBadState(_state)) { AdvanceBadState(); return; }
+            if (IsNeedState(_state)) return;
             EnterObraziona();
             return;
         }
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) return;
+        if (IsNeedState(_state)) return;
         _musicPlaying = true;
         if (_candlesLit)
             EnterCollectible(MouseState.Rozochocona);
@@ -494,6 +488,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         _candlesLit = true;
         if (_musicPlaying)
             EnterCollectible(MouseState.Rozochocona);
@@ -521,6 +516,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Czosnkowa);
     }
 
@@ -529,6 +525,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Zakochana);
         GameEvents.RaiseCutsceneRequested("Rose");
     }
@@ -538,6 +535,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Paczurowa);
         GameEvents.RaiseCutsceneRequested("Vacation");
     }
@@ -547,6 +545,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Spankowa);
     }
 
@@ -555,6 +554,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Makapaka);
     }
 
@@ -563,6 +563,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         EnterCollectible(MouseState.Czonstkowa);
     }
 
@@ -571,6 +572,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
+        if (IsNeedState(_state)) return;
         if (_state != MouseState.Pirat) EnterCollectible(MouseState.Pirat);
     }
 
