@@ -36,6 +36,7 @@ public class MouseStateManager : MonoBehaviour
     float _obrazonaTimer;
     float _collectibleTimer;
     bool  _running = true;
+    ChcacaRequest _chcacaRequest;
 
     void Awake()
     {
@@ -51,6 +52,7 @@ public class MouseStateManager : MonoBehaviour
     public float      Attention     => _attention;
     public float      Dirt          => _dirt;
     public bool[]     UnlockedTypes => _unlocked;
+    public ChcacaRequest CurrentChcacaRequest => _chcacaRequest;
 
     public bool IsHungry()  => _hunger    >= NeedThreshold;
     public bool IsDirty()   => _dirt      >= NeedThreshold;
@@ -216,6 +218,8 @@ public class MouseStateManager : MonoBehaviour
 
     void EnterNeedState(MouseState s)
     {
+        if (s == MouseState.Chcaca)
+            _chcacaRequest = (ChcacaRequest)Random.Range(1, 4);
         SetState(s);
         _inactivityTimer  = 0f;
         _collectibleTimer = 0f;
@@ -224,8 +228,9 @@ public class MouseStateManager : MonoBehaviour
 
     void EnterBadState(MouseState bad)
     {
-        _candlesLit   = false;
-        _musicPlaying = false;
+        _candlesLit      = false;
+        _musicPlaying    = false;
+        _chcacaRequest   = ChcacaRequest.None;
         ResetAllStats();
         SetState(bad);
         _badStateTimer    = 0f;
@@ -287,6 +292,10 @@ public class MouseStateManager : MonoBehaviour
                             IsWanting() ? MouseState.Chcaca    :
                             IsDirty()   ? MouseState.Smrodliwa :
                                           MouseState.Normal;
+        if (target == MouseState.Chcaca)
+            _chcacaRequest = (ChcacaRequest)Random.Range(1, 4);
+        else
+            _chcacaRequest = ChcacaRequest.None;
         SetState(target);
         _collectibleTimer = 0f;
         _inactivityTimer  = 0f;
@@ -580,6 +589,30 @@ public class MouseStateManager : MonoBehaviour
     {
         OnActivity();
         if (_state == MouseState.Pirat) ReturnToBase();
+    }
+
+    public void TriggerDrinkOnMouse()
+    {
+        if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.Drink) return;
+        _chcacaRequest = ChcacaRequest.None;
+        ResetAllStats();
+        EnterCollectible(MouseState.Pumpuzka);
+    }
+
+    public void TriggerMouseBallOnMouse()
+    {
+        if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.MouseBall) return;
+        _chcacaRequest = ChcacaRequest.None;
+        ResetAllStats();
+        EnterCollectible(MouseState.Pumpuzka);
+    }
+
+    public void TriggerStrongHug()
+    {
+        if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.StrongHug) return;
+        _chcacaRequest = ChcacaRequest.None;
+        ResetAllStats();
+        EnterCollectible(MouseState.Pumpuzka);
     }
 
     public void TriggerKitchenEntry()
