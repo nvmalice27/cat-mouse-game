@@ -61,6 +61,8 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             case ItemType.Garlic:    InventoryManager.Instance.UseGarlicOnMouse();       break;
             case ItemType.Drink:     InventoryManager.Instance.UseDrinkOnMouse();        break;
             case ItemType.MouseBall: InventoryManager.Instance.UseMouseBallOnMouse();    break;
+            case ItemType.CowEars:   InventoryManager.Instance.UseCowEarsOnMouse();      break;
+            case ItemType.Cow:       InventoryManager.Instance.UseCowOnMouse();          break;
         }
     }
 }
