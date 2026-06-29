@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic, Drink, MouseBall }
+public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic, Drink, MouseBall, CowEars, Cow }
 
 [System.Serializable]
 public class InventoryItem
@@ -27,6 +27,10 @@ public class InventoryManager : MonoBehaviour
     bool[] _ingredientHarvestedToday  = new bool[3];
     bool   _cookedToday;
     bool   _garlicHarvestedToday;
+    bool _cowEarsHarvestedToday;
+    bool _cowHarvestedToday;
+    int  _cowEarsInInventory;
+    int  _cowInInventory;
 
     public int  CrumbsTotal         => _crumbsTotal;
     public int  CrumbsInInventory   => _crumbsInInventory;
@@ -35,6 +39,10 @@ public class InventoryManager : MonoBehaviour
     public int  DrinkInInventory     => _drinkInInventory;
     public int  MouseBallInInventory => _mouseBallInInventory;
     public bool IsGarlicHarvested   => _garlicHarvestedToday;
+    public bool IsCowEarsHarvested   => _cowEarsHarvestedToday;
+    public bool IsCowHarvested       => _cowHarvestedToday;
+    public int  CowEarsInInventory   => _cowEarsInInventory;
+    public int  CowInInventory       => _cowInInventory;
     public IReadOnlyList<InventoryItem> Items => _items;
 
     // Accessory stanu dziennego
@@ -132,6 +140,38 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
+    public void CollectCowEars()
+    {
+        _cowEarsHarvestedToday = true;
+        _cowEarsInInventory++;
+        GameEvents.RaiseInventoryChanged();
+    }
+
+    public void CollectCow()
+    {
+        _cowHarvestedToday = true;
+        _cowInInventory++;
+        GameEvents.RaiseInventoryChanged();
+    }
+
+    public bool UseCowEarsOnMouse()
+    {
+        if (_cowEarsInInventory <= 0) return false;
+        _cowEarsInInventory--;
+        GameEvents.RaiseInventoryChanged();
+        MouseStateManager.Instance.TriggerCowItem();
+        return true;
+    }
+
+    public bool UseCowOnMouse()
+    {
+        if (_cowInInventory <= 0) return false;
+        _cowInInventory--;
+        GameEvents.RaiseInventoryChanged();
+        MouseStateManager.Instance.TriggerCowItem();
+        return true;
+    }
+
     public void CollectDrink()
     {
         _drinkInInventory++;
@@ -185,6 +225,10 @@ public class InventoryManager : MonoBehaviour
         _ingredientHarvestedToday = new bool[3];
         _cookedToday              = false;
         _garlicHarvestedToday     = false;
+        _cowEarsHarvestedToday = false;
+        _cowHarvestedToday     = false;
+        _cowEarsInInventory    = 0;
+        _cowInInventory        = 0;
         // _socksCollected / _garlicInInventory NIE są zerowane — przedmioty przechodzą na kolejny dzień
         GameEvents.RaiseSocksChanged(_socksCollected);
         GameEvents.RaiseInventoryChanged();
@@ -198,6 +242,8 @@ public class InventoryManager : MonoBehaviour
         _garlicInInventory    = d.garlicInInventory;
         _drinkInInventory     = d.drinkInInventory;
         _mouseBallInInventory = d.mouseBallInInventory;
+        _cowEarsInInventory = d.cowEarsInInventory;
+        _cowInInventory     = d.cowInInventory;
     }
 
     public void WriteSaveData(SaveData d)
@@ -208,5 +254,7 @@ public class InventoryManager : MonoBehaviour
         d.garlicInInventory    = _garlicInInventory;
         d.drinkInInventory     = _drinkInInventory;
         d.mouseBallInInventory = _mouseBallInInventory;
+        d.cowEarsInInventory = _cowEarsInInventory;
+        d.cowInInventory     = _cowInInventory;
     }
 }

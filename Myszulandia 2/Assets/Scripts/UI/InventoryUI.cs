@@ -15,6 +15,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Sprite     garlicSprite;
     [SerializeField] Sprite     drinkSprite;
     [SerializeField] Sprite     mouseBallSprite;
+    [SerializeField] Sprite     cowEarsSprite;
+    [SerializeField] Sprite     cowSprite;
 
     void OnEnable()
     {
@@ -49,6 +51,12 @@ public class InventoryUI : MonoBehaviour
 
         if (mgr.MouseBallInInventory > 0)
             AddSlot(ItemType.MouseBall, mouseBallSprite, mgr.MouseBallInInventory);
+
+        if (mgr.CowEarsInInventory > 0)
+            AddSlot(ItemType.CowEars, cowEarsSprite, mgr.CowEarsInInventory);
+
+        if (mgr.CowInInventory > 0)
+            AddSlot(ItemType.Cow, cowSprite, mgr.CowInInventory);
 
         if (mgr.SocksCollected > 0)
             AddSlot(ItemType.Sock, sockSprite, mgr.SocksCollected);
