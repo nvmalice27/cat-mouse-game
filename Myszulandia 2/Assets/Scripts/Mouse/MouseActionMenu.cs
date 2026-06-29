@@ -4,6 +4,7 @@ public class MouseActionMenu : MonoBehaviour
 {
     [SerializeField] GameObject panel;
     [SerializeField] GameObject bumpButton;
+    [SerializeField] GameObject strongHugButton;
 
     public void Show()   => panel.SetActive(true);
     public void Hide()   => panel.SetActive(false);
@@ -13,16 +14,23 @@ public class MouseActionMenu : MonoBehaviour
     {
         GameEvents.OnMouseStateChanged += OnStateChanged;
         if (MouseStateManager.Instance != null)
+        {
             RefreshBumpButton(MouseStateManager.Instance.CurrentState);
+            RefreshStrongHugButton(MouseStateManager.Instance.CurrentState);
+        }
     }
     void OnDisable() => GameEvents.OnMouseStateChanged -= OnStateChanged;
 
-    void Start() => RefreshBumpButton(MouseStateManager.Instance.CurrentState);
+    void Start()
+    {
+        RefreshBumpButton(MouseStateManager.Instance.CurrentState);
+        RefreshStrongHugButton(MouseStateManager.Instance.CurrentState);
+    }
 
     void OnStateChanged(MouseState state)
     {
         RefreshBumpButton(state);
-        // Zamknij menu jeśli wychodzi ze stanu Rozochocona (bumpcorzenie już niemożliwe)
+        RefreshStrongHugButton(state);
         if (state != MouseState.Rozochocona && panel.activeSelf)
             Hide();
     }
@@ -33,7 +41,16 @@ public class MouseActionMenu : MonoBehaviour
             bumpButton.SetActive(state == MouseState.Rozochocona);
     }
 
-    public void OnHug()  { Debug.Log("[OnHug] wywołane"); MouseStateManager.Instance.TriggerHug();  Hide(); }
-    public void OnKiss() { MouseStateManager.Instance.TriggerKiss(); Hide(); }
-    public void OnBump() { MouseStateManager.Instance.TriggerBump(); Hide(); }
+    void RefreshStrongHugButton(MouseState state)
+    {
+        if (strongHugButton == null) return;
+        bool show = state == MouseState.Chcaca &&
+                    MouseStateManager.Instance.CurrentChcacaRequest == ChcacaRequest.StrongHug;
+        strongHugButton.SetActive(show);
+    }
+
+    public void OnHug()       { Debug.Log("[OnHug] wywołane"); MouseStateManager.Instance.TriggerHug();       Hide(); }
+    public void OnKiss()      { MouseStateManager.Instance.TriggerKiss();      Hide(); }
+    public void OnBump()      { MouseStateManager.Instance.TriggerBump();      Hide(); }
+    public void OnStrongHug() { MouseStateManager.Instance.TriggerStrongHug(); Hide(); }
 }
