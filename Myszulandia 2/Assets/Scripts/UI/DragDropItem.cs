@@ -52,13 +52,15 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     {
         switch (itemType)
         {
-            case ItemType.Crumb:    InventoryManager.Instance.UseCrumbOnMouse();        break;
-            case ItemType.Sock:     InventoryManager.Instance.TryUseSocksOnMouse();     break;
-            case ItemType.MealGood: InventoryManager.Instance.TryUseMealOnMouse(true);  break;
-            case ItemType.MealBad:  InventoryManager.Instance.TryUseMealOnMouse(false); break;
-            case ItemType.Rose:     InventoryManager.Instance.UseRoseOnMouse();         break;
-            case ItemType.Ticket:   InventoryManager.Instance.UseTicketOnMouse();       break;
-            case ItemType.Garlic:   InventoryManager.Instance.UseGarlicOnMouse();       break;
+            case ItemType.Crumb:     InventoryManager.Instance.UseCrumbOnMouse();        break;
+            case ItemType.Sock:      InventoryManager.Instance.TryUseSocksOnMouse();     break;
+            case ItemType.MealGood:  InventoryManager.Instance.TryUseMealOnMouse(true);  break;
+            case ItemType.MealBad:   InventoryManager.Instance.TryUseMealOnMouse(false); break;
+            case ItemType.Rose:      InventoryManager.Instance.UseRoseOnMouse();         break;
+            case ItemType.Ticket:    InventoryManager.Instance.UseTicketOnMouse();       break;
+            case ItemType.Garlic:    InventoryManager.Instance.UseGarlicOnMouse();       break;
+            case ItemType.Drink:     InventoryManager.Instance.UseDrinkOnMouse();        break;
+            case ItemType.MouseBall: InventoryManager.Instance.UseMouseBallOnMouse();    break;
         }
     }
 }
