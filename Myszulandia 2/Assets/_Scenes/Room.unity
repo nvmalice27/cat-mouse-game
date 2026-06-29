@@ -13873,9 +13873,9 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   iconRenderer: {fileID: 920000012}
-  drinkIcon: {fileID: 0}
-  mouseBallIcon: {fileID: 0}
-  strongHugIcon: {fileID: 0}
+  drinkIcon: {fileID: 21300000, guid: ff087b2d8044aac43bf415f7155f1f5f, type: 3}
+  mouseBallIcon: {fileID: 21300000, guid: ac5d5fee2fc2de64997809448f41ecce, type: 3}
+  strongHugIcon: {fileID: 21300000, guid: 58af53f53ae3ab6429302457b940b25d, type: 3}
 --- !u!1 &920000050
 GameObject:
   m_ObjectHideFlags: 0
