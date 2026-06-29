@@ -13,7 +13,7 @@ public static class MouseTypeSOGenerator
         public string cutsceneKey;
     }
 
-    // Order matches CollectibleIndex in MouseStateManager (indices 0–26):
+    // Order matches CollectibleIndex in MouseStateManager (indices 0–27):
     static readonly TypeData[] Types = new TypeData[]
     {
         // 0 — Heppi

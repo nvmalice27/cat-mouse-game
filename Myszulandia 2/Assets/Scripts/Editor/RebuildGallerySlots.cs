@@ -161,7 +161,8 @@ public static class RebuildGallerySlots
         EditorSceneManager.SaveScene(galleryUI.gameObject.scene);
         if (openedScene) EditorSceneManager.CloseScene(galleryUI.gameObject.scene, true);
 
-        Debug.Log($"✓ Galeria przebudowana: {TotalSlots} slotów ({Cols}×{TotalSlots / Cols}), bez przewijania.");
+        int rows = (TotalSlots + Cols - 1) / Cols;
+        Debug.Log($"✓ Galeria przebudowana: {TotalSlots} slotów ({Cols}×{rows} rzędów).");
     }
 
     static string FindScenePath(string sceneName)
