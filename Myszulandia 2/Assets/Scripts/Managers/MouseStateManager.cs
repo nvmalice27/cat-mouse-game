@@ -15,6 +15,7 @@ public class MouseStateManager : MonoBehaviour
     const float ObrazedBlockDur     = 60f;
     const float ObrazedGraceDur     = 60f;
     const float CollectibleDuration = 60f;
+    const float NeedCooldown        = 60f;
     const int   UnlockedSize        = 27;
 
     // Staty
@@ -35,6 +36,9 @@ public class MouseStateManager : MonoBehaviour
     float _badStateTimer;
     float _obrazonaTimer;
     float _collectibleTimer;
+    float _hungerCooldown;
+    float _attentionCooldown;
+    float _dirtCooldown;
     bool  _running = true;
     ChcacaRequest _chcacaRequest;
 
@@ -66,6 +70,7 @@ public class MouseStateManager : MonoBehaviour
     public void ResetForNewDay()
     {
         _hunger = _attention = _dirt = 0f;
+        _hungerCooldown = _attentionCooldown = _dirtCooldown = 0f;
         _inactivityTimer = _badStateTimer = _obrazonaTimer = _collectibleTimer = 0f;
         SetState(MouseState.Normal);
         _running = true;
@@ -109,9 +114,13 @@ public class MouseStateManager : MonoBehaviour
     {
         if (IsStatsFrozen()) return;
 
-        _hunger    = Mathf.Min(NeedMax, _hunger    + HungerGrowRate    * dt);
-        _attention = Mathf.Min(NeedMax, _attention + AttentionGrowRate * dt);
-        _dirt      = Mathf.Min(NeedMax, _dirt      + DirtGrowRate      * dt);
+        _hungerCooldown    = Mathf.Max(0f, _hungerCooldown    - dt);
+        _attentionCooldown = Mathf.Max(0f, _attentionCooldown - dt);
+        _dirtCooldown      = Mathf.Max(0f, _dirtCooldown      - dt);
+
+        if (_hungerCooldown    <= 0f) _hunger    = Mathf.Min(NeedMax, _hunger    + HungerGrowRate    * dt);
+        if (_attentionCooldown <= 0f) _attention = Mathf.Min(NeedMax, _attention + AttentionGrowRate * dt);
+        if (_dirtCooldown      <= 0f) _dirt      = Mathf.Min(NeedMax, _dirt      + DirtGrowRate      * dt);
 
         // Którykolwiek stat = 100 → Złowroga
         if (_hunger >= NeedMax || _attention >= NeedMax || _dirt >= NeedMax)
@@ -297,7 +306,15 @@ public class MouseStateManager : MonoBehaviour
         _inactivityTimer  = 0f;
     }
 
-    void ResetAllStats() => _hunger = _attention = _dirt = 0f;
+    void ResetAllStats()
+    {
+        _hunger = _attention = _dirt = 0f;
+        _hungerCooldown = _attentionCooldown = _dirtCooldown = 0f;
+    }
+
+    void SatisfyHunger()    { _hunger    = 0f; _hungerCooldown    = NeedCooldown; }
+    void SatisfyAttention() { _attention = 0f; _attentionCooldown = NeedCooldown; }
+    void SatisfyDirt()      { _dirt      = 0f; _dirtCooldown      = NeedCooldown; }
 
     void SetState(MouseState s)
     {
@@ -420,7 +437,7 @@ public class MouseStateManager : MonoBehaviour
         if (_state == MouseState.Hungry)
         {
             if (!isGood) return;   // zła karma gdy głodna → brak efektu
-            ResetAllStats();
+            SatisfyHunger();
             EnterCollectible(MouseState.Czonstkujaca);
             return;
         }
@@ -437,7 +454,7 @@ public class MouseStateManager : MonoBehaviour
         if (HandleRozochwana()) return;
         if (IsBadState(_state)) return;
 
-        if (_state == MouseState.Smrodliwa) { ResetAllStats(); EnterCollectible(MouseState.Pachnaca); return; }
+        if (_state == MouseState.Smrodliwa) { SatisfyDirt(); EnterCollectible(MouseState.Pachnaca); return; }
         if (IsNeedState(_state)) return;
         // czysta mysz — brak efektu
     }
@@ -591,7 +608,7 @@ public class MouseStateManager : MonoBehaviour
     {
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.Drink) return;
         _chcacaRequest = ChcacaRequest.None;
-        ResetAllStats();
+        SatisfyAttention();
         EnterCollectible(MouseState.Pumpuzka);
     }
 
@@ -599,7 +616,7 @@ public class MouseStateManager : MonoBehaviour
     {
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.MouseBall) return;
         _chcacaRequest = ChcacaRequest.None;
-        ResetAllStats();
+        SatisfyAttention();
         EnterCollectible(MouseState.Pumpuzka);
     }
 
@@ -607,7 +624,7 @@ public class MouseStateManager : MonoBehaviour
     {
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.StrongHug) return;
         _chcacaRequest = ChcacaRequest.None;
-        ResetAllStats();
+        SatisfyAttention();
         EnterCollectible(MouseState.Pumpuzka);
     }
 
