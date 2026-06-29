@@ -16,7 +16,7 @@ public class MouseStateManager : MonoBehaviour
     const float ObrazedGraceDur     = 60f;
     const float CollectibleDuration = 60f;
     const float NeedCooldown        = 60f;
-    const int   UnlockedSize        = 27;
+    const int   UnlockedSize        = 28;
 
     // Staty
     float _hunger;
@@ -271,6 +271,7 @@ public class MouseStateManager : MonoBehaviour
         SetState(prev);
         _badStateTimer   = 0f;
         _inactivityTimer = 0f;
+        TryUnlock(prev);
     }
 
     void EnterCollectible(MouseState s)
@@ -394,6 +395,7 @@ public class MouseStateManager : MonoBehaviour
         MouseState.Zlowroga        => 24,
         MouseState.Sciekla         => 25,
         MouseState.ScieklaII       => 26,
+        MouseState.Krowka          => 27,
         _                          => -1
     };
 
@@ -633,7 +635,7 @@ public class MouseStateManager : MonoBehaviour
         OnActivity();
         if (IsBadState(_state) || IsNeedState(_state) || _state == MouseState.Obrazona) return;
         if (HandleRozochwana()) return;
-        SetState(MouseState.Myszkujaca);
+        EnterCollectible(MouseState.Myszkujaca);
     }
 
     public void TriggerKitchenExit()

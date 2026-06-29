@@ -7,8 +7,8 @@ using TMPro;
 
 public static class RebuildGallerySlots
 {
-    // 3 cols × 9 rows = 27 — matches CollectibleIndex size
-    const int TotalSlots    = 27;
+    // 3 cols × 10 rows = 30 — matches CollectibleIndex size (28 slots, ceiling to 10 rows)
+    const int TotalSlots    = 28;
     const int Cols          = 3;
 
     // Slot dimensions tuned so 9 rows fit in a 1920×1080 canvas without scrolling.
@@ -21,7 +21,9 @@ public static class RebuildGallerySlots
     const float PadSide     = 80f;   // wide side padding centres 3 cols in 1860px
     const float PadVert     = 20f;
     static readonly float ContentH =
-        TotalSlots / Cols * SlotH + (TotalSlots / Cols - 1) * SpacingY + PadVert * 2;
+        ((TotalSlots + Cols - 1) / Cols) * SlotH +
+        (((TotalSlots + Cols - 1) / Cols) - 1) * SpacingY +
+        PadVert * 2;
 
     [MenuItem("CatMouse/Rebuild Gallery Slots (Gallery scene)")]
     public static void Rebuild()

@@ -26,6 +26,7 @@ public enum MouseState
     Roztopiona       = 26,  // rozochocona + bumpcorzenie
     Spankowa         = 27,  // poduszka/sen
     Czosnkowa        = 28,  // czosnek
+    Krowka          = 29,  // uszka krowy + krowa na mysz po sobie
 
     Smutna           = 30,  // zły stan — łańcuch poziom 1
     Zlowroga         = 31,  // zły stan — łańcuch poziom 3

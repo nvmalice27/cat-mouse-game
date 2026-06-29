@@ -70,6 +70,8 @@ public static class MouseTypeSOGenerator
         new() { name = "Sciekla",         displayName = "Ściekła",           galleryHint = "Doprowadź myszkę do ostateczności.",             cutsceneKey = "Sciekla"         },
         // 26 — ScieklaII
         new() { name = "ScieklaII",       displayName = "Ściekła II",        galleryHint = "Nie ratuj myszki na czas.",                     cutsceneKey = "ScieklaII"       },
+        // 27 — Krowka
+        new() { name = "Krowka", displayName = "Krówka", galleryHint = "Użyj Uszek Krowy i Krowy na myszce po sobie.", cutsceneKey = "Krowka" },
     };
 
     // Auto-generate .asset files whenever scripts recompile

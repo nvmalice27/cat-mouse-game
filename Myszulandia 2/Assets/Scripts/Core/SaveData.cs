@@ -9,13 +9,15 @@ public class SaveData
     public float  attention           = 0f;
     public float  dirt                = 0f;
     public int    mouseStateValue     = 0;
-    public bool[] unlockedMouseTypes  = new bool[27];
+    public bool[] unlockedMouseTypes  = new bool[28];
     public int    crumbsTotal         = 0;
     public int    crumbsInInventory   = 0;
     public int    socksCollected      = 0;
     public int    garlicInInventory   = 0;
     public int    drinkInInventory    = 0;
     public int    mouseBallInInventory = 0;
+    public int    cowEarsInInventory   = 0;
+    public int    cowInInventory       = 0;
     public int    alarmTypeValue      = 0;
     public bool   bedMade             = false;
 }
