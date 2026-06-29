@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!29 &1
 OcclusionCullingSettings:
@@ -3855,7 +3855,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panel: {fileID: 526763698}
   bumpButton: {fileID: 654016285}
-  strongHugButton: {fileID: 920000020}
+  strongHugButton: {fileID: 920000010}
 --- !u!114 &526763701
 MonoBehaviour:
   m_ObjectHideFlags: 0
