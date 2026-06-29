@@ -40,6 +40,7 @@ public class MouseStateManager : MonoBehaviour
     float _attentionCooldown;
     float _dirtCooldown;
     bool  _running = true;
+    int   _cowComboStep;
     ChcacaRequest _chcacaRequest;
 
     void Awake()
@@ -403,6 +404,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerHug()
     {
+        ClearCowCombo();
         Debug.Log($"[TriggerHug] stan={_state} uwaga={_attention:F1} zablok={IsBlocked()} zly={IsBadState(_state)}");
         if (IsBlocked()) return;
         OnActivity();
@@ -416,6 +418,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerKiss()
     {
+        ClearCowCombo();
         if (IsBlocked()) return;
         OnActivity();
 
@@ -428,6 +431,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void Feed(bool isGood)
     {
+        ClearCowCombo();
         if (IsBlocked()) return;
         OnActivity();
 
@@ -450,6 +454,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerWash()
     {
+        ClearCowCombo();
         if (IsBlocked()) return;
         OnActivity();
 
@@ -463,6 +468,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerBike()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -475,6 +481,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerCrumbs()
     {
+        ClearCowCombo();
         if (IsBlocked()) return;
         OnActivity();
         if (HandleGrace(isEvil: true)) return;
@@ -485,6 +492,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerMusic(bool isGood)
     {
+        ClearCowCombo();
         if (IsBlocked()) return;
         OnActivity();
 
@@ -509,6 +517,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerCandles()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -521,6 +530,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerStopMusic()
     {
+        ClearCowCombo();
         _musicPlaying = false;
         if (_state == MouseState.Tanczaca)
             ReturnToBase();
@@ -528,6 +538,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerBump()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         // Bump NIE wywołuje HandleRozochwana — to jedyna poprawna akcja w Rozochocona
@@ -537,6 +548,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerGarlic()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -546,6 +558,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerRose()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -556,6 +569,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerVacation()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -566,6 +580,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerSleep()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -575,6 +590,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerMakapaka()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -584,6 +600,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerCzonstkowa()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -593,6 +610,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerPirat()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBlocked() || HandleGrace() || IsBadState(_state)) return;
         if (HandleRozochwana()) return;
@@ -602,12 +620,14 @@ public class MouseStateManager : MonoBehaviour
 
     public void ClearPirat()
     {
+        ClearCowCombo();
         OnActivity();
         if (_state == MouseState.Pirat) ReturnToBase();
     }
 
     public void TriggerDrinkOnMouse()
     {
+        ClearCowCombo();
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.Drink) return;
         _chcacaRequest = ChcacaRequest.None;
         SatisfyAttention();
@@ -616,6 +636,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerMouseBallOnMouse()
     {
+        ClearCowCombo();
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.MouseBall) return;
         _chcacaRequest = ChcacaRequest.None;
         SatisfyAttention();
@@ -624,6 +645,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerStrongHug()
     {
+        ClearCowCombo();
         if (_state != MouseState.Chcaca || _chcacaRequest != ChcacaRequest.StrongHug) return;
         _chcacaRequest = ChcacaRequest.None;
         SatisfyAttention();
@@ -632,6 +654,7 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerKitchenEntry()
     {
+        ClearCowCombo();
         OnActivity();
         if (IsBadState(_state) || IsNeedState(_state) || _state == MouseState.Obrazona) return;
         if (HandleRozochwana()) return;
@@ -640,13 +663,27 @@ public class MouseStateManager : MonoBehaviour
 
     public void TriggerKitchenExit()
     {
+        ClearCowCombo();
         OnActivity();
         if (_state == MouseState.Myszkujaca) ReturnToBase();
     }
 
     public void TriggerAlarmWakeup(AlarmType alarm)
     {
+        ClearCowCombo();
         MouseState s = alarm == AlarmType.Early ? MouseState.Niewyspana : MouseState.WesolaPoPobudce;
         EnterCollectible(s);
     }
+
+    public void TriggerCowItem()
+    {
+        OnActivity();
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) { _cowComboStep = 0; return; }
+        if (HandleRozochwana()) { _cowComboStep = 0; return; }
+        if (IsNeedState(_state)) { _cowComboStep = 0; return; }
+        _cowComboStep++;
+        if (_cowComboStep >= 2) { _cowComboStep = 0; EnterCollectible(MouseState.Krowka); }
+    }
+
+    void ClearCowCombo() => _cowComboStep = 0;
 }
