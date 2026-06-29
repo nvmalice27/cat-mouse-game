@@ -20,7 +20,7 @@ public class ChcacaBubble : MonoBehaviour
     {
         if (state != MouseState.Chcaca)
         {
-            gameObject.SetActive(false);
+            if (iconRenderer != null) iconRenderer.enabled = false;
             return;
         }
 
@@ -32,7 +32,10 @@ public class ChcacaBubble : MonoBehaviour
             _                       => null
         };
 
-        gameObject.SetActive(icon != null);
-        if (iconRenderer != null) iconRenderer.sprite = icon;
+        if (iconRenderer != null)
+        {
+            iconRenderer.sprite  = icon;
+            iconRenderer.enabled = (icon != null);
+        }
     }
 }

@@ -421,15 +421,15 @@ public class MouseStateManager : MonoBehaviour
         if (!isGood && IsBadState(_state)) { AdvanceBadState(); return; }
         if (IsBadState(_state)) return;
 
-        if (!isGood) { EnterObraziona(); return; }
-
         if (_state == MouseState.Hungry)
         {
+            if (!isGood) return;   // zła karma gdy głodna → brak efektu
             ResetAllStats();
             EnterCollectible(MouseState.Czonstkujaca);
             return;
         }
-        if (IsNeedState(_state)) return;
+        if (IsNeedState(_state)) return;   // blokuje Chcaca i Smrodliwa
+        if (!isGood) { EnterObraziona(); return; }
         EnterCollectible(MouseState.Grobol);
     }
 
