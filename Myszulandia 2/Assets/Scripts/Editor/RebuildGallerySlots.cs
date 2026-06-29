@@ -7,7 +7,7 @@ using TMPro;
 
 public static class RebuildGallerySlots
 {
-    // 3 cols × 10 rows = 30 — matches CollectibleIndex size (28 slots, ceiling to 10 rows)
+    // 28 slots, 3 cols × ceil(28/3)=10 rows — matches CollectibleIndex size
     const int TotalSlots    = 28;
     const int Cols          = 3;
 
