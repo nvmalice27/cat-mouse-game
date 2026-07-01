@@ -6,61 +6,63 @@ public static class AddContainerObjects
 {
     const string PlaceholderDir = "Assets/Art/Placeholders";
 
-    [MenuItem("CatMouse/Add Container Objects (placeholders)")]
-    public static void AddContainers()
+    // Uruchom mając otwartą scenę Room
+    [MenuItem("CatMouse/Add Containers - Room (Szuflada + Koldra)")]
+    public static void AddContainersRoom()
     {
         EnsureFolder("Assets/Art", "Placeholders");
 
-        // ── sprites ────────────────────────────────────────────────────────────
-        var sprDrawerClosed  = MakeSprite("szuflada_zamknieta", new Color(0.55f, 0.35f, 0.15f), 120,  50);
-        var sprDrawerOpen    = MakeSprite("szuflada_otwarta",   new Color(0.72f, 0.52f, 0.28f), 120,  50);
-        var sprFridgeClosed  = MakeSprite("lodowka_zamknieta",  new Color(0.90f, 0.95f, 1.00f),  80, 160);
-        var sprFridgeOpen    = MakeSprite("lodowka_otwarta",    new Color(0.70f, 0.88f, 0.95f),  80, 160);
-        var sprBlanketOn     = MakeSprite("koldra_zakryta",     new Color(0.30f, 0.58f, 0.72f), 160,  80);
-        var sprBlanketOff    = MakeSprite("koldra_odkryta",     new Color(0.55f, 0.82f, 0.92f), 160,  80);
-
-        var sprSockHidden    = MakeSprite("sock_hidden",        new Color(1.00f, 0.71f, 0.76f),  30,  50);
-        var sprIngHidden     = MakeSprite("ingredient_hidden",  new Color(0.20f, 0.70f, 0.20f),  50,  50);
-        var sprItemHidden    = MakeSprite("item_hidden",        new Color(1.00f, 0.85f, 0.30f),  40,  40);
+        var sprDrawerClosed = MakeSprite("szuflada_zamknieta", new Color(0.55f, 0.35f, 0.15f), 120,  50);
+        var sprDrawerOpen   = MakeSprite("szuflada_otwarta",   new Color(0.72f, 0.52f, 0.28f), 120,  50);
+        var sprBlanketOn    = MakeSprite("koldra_zakryta",     new Color(0.30f, 0.58f, 0.72f), 160,  80);
+        var sprBlanketOff   = MakeSprite("koldra_odkryta",     new Color(0.55f, 0.82f, 0.92f), 160,  80);
+        var sprSockHidden   = MakeSprite("sock_hidden",        new Color(1.00f, 0.71f, 0.76f),  30,  50);
+        var sprItemHidden   = MakeSprite("item_hidden",        new Color(1.00f, 0.85f, 0.30f),  40,  40);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        // ── Szuflada → ukryta skarpetka ───────────────────────────────────────
+        // Szuflada → ukryta skarpetka
         var drawer = MakeContainer("Szuflada", new Vector3(-1.5f, -0.5f, 0),
             sprDrawerClosed, sprDrawerOpen, sortOrder: 2);
-
-        var sockGO  = MakeHidden("Sock_Hidden", drawer.transform, sprSockHidden);
-        var sock    = sockGO.AddComponent<SockObject>();
+        var sockGO = MakeHidden("Sock_Hidden", drawer.transform, sprSockHidden);
+        var sock   = sockGO.AddComponent<SockObject>();
         SetIntField(sock, "sockIndex", 3);
-
         WireHiddenObjects(drawer.GetComponent<ContainerObject>(), new[] { sockGO });
 
-        // ── Lodówka → ukryty składnik ─────────────────────────────────────────
-        var fridge = MakeContainer("Lodowka", new Vector3(2.5f, 0.0f, 0),
-            sprFridgeClosed, sprFridgeOpen, sortOrder: 2);
-
-        var ingGO = MakeHidden("Ingredient_Hidden", fridge.transform, sprIngHidden);
-        // IngredientSource wymaga ręcznego wpisania KitchenScene w Inspectorze
-        ingGO.AddComponent<IngredientSource>();
-
-        WireHiddenObjects(fridge.GetComponent<ContainerObject>(), new[] { ingGO });
-
-        // ── Kołdra → ukryty przedmiot ─────────────────────────────────────────
+        // Koldrа → ukryty przedmiot
         var blanket = MakeContainer("Koldra", new Vector3(2.0f, 1.3f, 0),
             sprBlanketOn, sprBlanketOff, sortOrder: 3);
-
         var itemGO = MakeHidden("Hidden_Item", blanket.transform, sprItemHidden);
-
         WireHiddenObjects(blanket.GetComponent<ContainerObject>(), new[] { itemGO });
 
-        // ── save ───────────────────────────────────────────────────────────────
-        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-        UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+        SaveScene();
+        Debug.Log("Szuflada + Koldra dodane do sceny Room!");
+    }
 
-        Debug.Log("✓ Szuflada, Lodówka, Kołdra dodane z placeholder sprites!\n" +
-                  "Uwaga: Lodówka/Ingredient_Hidden wymaga ręcznego wpisania KitchenScene w Inspectorze.");
+    // Uruchom mając otwartą scenę Kitchen
+    [MenuItem("CatMouse/Add Containers - Kitchen (Lodowka)")]
+    public static void AddContainersKitchen()
+    {
+        EnsureFolder("Assets/Art", "Placeholders");
+
+        var sprFridgeClosed = MakeSprite("lodowka_zamknieta", new Color(0.90f, 0.95f, 1.00f), 80, 160);
+        var sprFridgeOpen   = MakeSprite("lodowka_otwarta",   new Color(0.70f, 0.88f, 0.95f), 80, 160);
+        var sprIngHidden    = MakeSprite("ingredient_hidden", new Color(0.20f, 0.70f, 0.20f), 50,  50);
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        // Lodowka → ukryty skladnik
+        var fridge = MakeContainer("Lodowka", new Vector3(2.5f, 0.0f, 0),
+            sprFridgeClosed, sprFridgeOpen, sortOrder: 2);
+        var ingGO = MakeHidden("Ingredient_Hidden", fridge.transform, sprIngHidden);
+        ingGO.AddComponent<IngredientSource>();
+        WireHiddenObjects(fridge.GetComponent<ContainerObject>(), new[] { ingGO });
+
+        SaveScene();
+        Debug.Log("Lodowka dodana do sceny Kitchen!\n" +
+                  "Uwaga: Ingredient_Hidden wymaga recznego wpisania KitchenScene w Inspectorze.");
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────
@@ -75,7 +77,7 @@ public static class AddContainerObjects
         sr.sprite       = closedSpr;
         sr.sortingOrder = sortOrder;
 
-        var col = go.AddComponent<BoxCollider2D>();
+        var col  = go.AddComponent<BoxCollider2D>();
         col.size = closedSpr != null ? closedSpr.bounds.size : new Vector2(1f, 1f);
 
         var container = go.AddComponent<ContainerObject>();
@@ -95,7 +97,7 @@ public static class AddContainerObjects
         sr.sprite       = spr;
         sr.sortingOrder = parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
-        var col = go.AddComponent<BoxCollider2D>();
+        var col  = go.AddComponent<BoxCollider2D>();
         col.size = spr != null ? spr.bounds.size : new Vector2(0.5f, 0.5f);
 
         go.SetActive(false);
@@ -149,6 +151,13 @@ public static class AddContainerObjects
         var sp = so.FindProperty(field);
         if (sp != null) { sp.intValue = value; so.ApplyModifiedProperties(); }
         else Debug.LogWarning($"Pole int '{field}' nie znalezione na {target.GetType().Name}");
+    }
+
+    static void SaveScene()
+    {
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
     }
 
     static void EnsureFolder(string parent, string child)
