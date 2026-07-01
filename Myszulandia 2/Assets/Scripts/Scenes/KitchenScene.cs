@@ -19,40 +19,34 @@ public class KitchenScene : MonoBehaviour
     void Start()
     {
         if (cookButton == null) { Debug.LogError("KitchenScene: cookButton nie jest przypisany!"); return; }
+        cookButton.SetActive(false);
 
         var mgr = InventoryManager.Instance;
-        if (mgr != null && mgr.CookedToday)
+        if (mgr == null) return;
+
+        if (mgr.CookedToday)
         {
-            // Ugotowano już dziś — schowaj wszystko
-            cookButton.SetActive(false);
             DisableAllSources();
             return;
         }
 
-        cookButton.SetActive(false);
-
-        // Schowaj składniki które już zebrano dziś
-        if (mgr != null)
+        // Odtwórz listę zebranych składników z InventoryManager
+        for (int i = 0; i < ingredientSources.Length; i++)
         {
-            for (int i = 0; i < ingredientSources.Length; i++)
-            {
-                if (mgr.IsIngredientHarvested(i))
-                {
-                    ingredientSources[i].SetActive(false);
-                    _collected.Add(i);
-                }
-            }
-            if (_collected.Count >= ingredientsNeeded)
-                cookButton.SetActive(true);
+            if (mgr.IsIngredientHarvested(i))
+                _collected.Add(i);
         }
+        if (_collected.Count >= ingredientsNeeded)
+            cookButton.SetActive(true);
+        // IngredientSource.Start() samodzielnie chowa już zebrane składniki
     }
 
     void OnNewDay()
     {
         _cooking = false;
         _collected.Clear();
-        foreach (var src in ingredientSources) src.SetActive(true);
         if (cookButton != null) cookButton.SetActive(false);
+        // IngredientSource.Respawn() samodzielnie odkrywa składniki w nowym dniu
     }
 
     void OnStateChanged(MouseState newState)
@@ -70,7 +64,6 @@ public class KitchenScene : MonoBehaviour
     {
         if (_cooking || _collected.Contains(sourceIndex)) return;
         _collected.Add(sourceIndex);
-        ingredientSources[sourceIndex].SetActive(false);
         InventoryManager.Instance.MarkIngredientHarvested(sourceIndex);
         if (_collected.Count >= ingredientsNeeded && cookButton != null)
             cookButton.SetActive(true);
