@@ -22,7 +22,6 @@ public static class AddContainerObjects
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        // Szuflada → ukryta skarpetka
         var drawer = MakeContainer("Szuflada", new Vector3(-1.5f, -0.5f, 0),
             sprDrawerClosed, sprDrawerOpen, sortOrder: 2);
         var sockGO = MakeHidden("Sock_Hidden", drawer.transform, sprSockHidden);
@@ -30,7 +29,6 @@ public static class AddContainerObjects
         SetIntField(sock, "sockIndex", 3);
         WireHiddenObjects(drawer.GetComponent<ContainerObject>(), new[] { sockGO });
 
-        // Koldrа → ukryty przedmiot
         var blanket = MakeContainer("Koldra", new Vector3(2.0f, 1.3f, 0),
             sprBlanketOn, sprBlanketOff, sortOrder: 3);
         var itemGO = MakeHidden("Hidden_Item", blanket.transform, sprItemHidden);
@@ -53,19 +51,59 @@ public static class AddContainerObjects
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        // Lodowka → ukryty skladnik
         var fridge = MakeContainer("Lodowka", new Vector3(2.5f, 0.0f, 0),
             sprFridgeClosed, sprFridgeOpen, sortOrder: 2);
         var ingGO = MakeHidden("Ingredient_Hidden", fridge.transform, sprIngHidden);
-        ingGO.AddComponent<IngredientSource>();
+        var src   = ingGO.AddComponent<IngredientSource>();
+
+        WireIngredientSource(src, ingGO);
         WireHiddenObjects(fridge.GetComponent<ContainerObject>(), new[] { ingGO });
 
         SaveScene();
-        Debug.Log("Lodowka dodana do sceny Kitchen!\n" +
-                  "Uwaga: Ingredient_Hidden wymaga recznego wpisania KitchenScene w Inspectorze.");
+    }
+
+    // Naprawia brakujące referencje na istniejącej Lodówce — uruchom w scenie Kitchen
+    [MenuItem("CatMouse/Fix Fridge Ingredient (Kitchen)")]
+    public static void FixFridgeIngredient()
+    {
+        var fridgeGO = GameObject.Find("Lodowka");
+        if (fridgeGO == null) { Debug.LogError("Nie znaleziono 'Lodowka' w scenie — upewnij się że scena Kitchen jest otwarta."); return; }
+
+        var ingTransform = fridgeGO.transform.Find("Ingredient_Hidden");
+        if (ingTransform == null) { Debug.LogError("Nie znaleziono 'Ingredient_Hidden' jako dziecka Lodowki."); return; }
+
+        var src = ingTransform.GetComponent<IngredientSource>();
+        if (src == null) { Debug.LogError("Ingredient_Hidden nie ma komponentu IngredientSource."); return; }
+
+        WireIngredientSource(src, ingTransform.gameObject);
+
+        SaveScene();
+        Debug.Log("Ingredient_Hidden naprawiony!");
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────
+
+    static void WireIngredientSource(IngredientSource src, GameObject ingGO)
+    {
+        var kitchenScene = Object.FindObjectOfType<KitchenScene>();
+        if (kitchenScene == null)
+        {
+            Debug.LogError("Nie znaleziono KitchenScene w scenie — uruchom najpierw Setup Kitchen Scene.");
+            return;
+        }
+
+        // Dodaj ingGO do tablicy ingredientSources jako nowy indeks
+        var kitchenSO   = new SerializedObject(kitchenScene);
+        var sourcesProp = kitchenSO.FindProperty("ingredientSources");
+        int newIndex    = sourcesProp.arraySize;
+        sourcesProp.arraySize = newIndex + 1;
+        sourcesProp.GetArrayElementAtIndex(newIndex).objectReferenceValue = ingGO;
+        kitchenSO.ApplyModifiedProperties();
+
+        // Ustaw pola IngredientSource
+        SetField(src, "kitchen", kitchenScene);
+        SetIntField(src, "sourceIndex", newIndex);
+    }
 
     static GameObject MakeContainer(string name, Vector3 pos,
         Sprite closedSpr, Sprite openSpr, int sortOrder)
