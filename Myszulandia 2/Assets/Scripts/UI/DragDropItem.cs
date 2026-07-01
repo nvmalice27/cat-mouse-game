@@ -54,8 +54,10 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         {
             case ItemType.Crumb:     InventoryManager.Instance.UseCrumbOnMouse();        break;
             case ItemType.Sock:      InventoryManager.Instance.TryUseSocksOnMouse();     break;
-            case ItemType.MealGood:  InventoryManager.Instance.TryUseMealOnMouse(true);  break;
-            case ItemType.MealBad:   InventoryManager.Instance.TryUseMealOnMouse(false); break;
+            case ItemType.MealGood:  InventoryManager.Instance.TryUseMealOnMouse(true);   break;
+            case ItemType.MealBad:   InventoryManager.Instance.TryUseMealOnMouse(false);  break;
+            case ItemType.MealGood2: InventoryManager.Instance.TryUseMeal2OnMouse(true);  break;
+            case ItemType.MealBad2:  InventoryManager.Instance.TryUseMeal2OnMouse(false); break;
             case ItemType.Rose:      InventoryManager.Instance.UseRoseOnMouse();         break;
             case ItemType.Ticket:    InventoryManager.Instance.UseTicketOnMouse();       break;
             case ItemType.Garlic:    InventoryManager.Instance.UseGarlicOnMouse();       break;

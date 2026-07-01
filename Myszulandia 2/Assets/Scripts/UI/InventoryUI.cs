@@ -10,6 +10,8 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Sprite     sockSprite;
     [SerializeField] Sprite     mealGoodSprite;
     [SerializeField] Sprite     mealBadSprite;
+    [SerializeField] Sprite     mealGood2Sprite;
+    [SerializeField] Sprite     mealBad2Sprite;
     [SerializeField] Sprite     roseSprite;
     [SerializeField] Sprite     ticketSprite;
     [SerializeField] Sprite     garlicSprite;
@@ -65,12 +67,14 @@ public class InventoryUI : MonoBehaviour
         {
             Sprite icon = item.type switch
             {
-                ItemType.MealGood => mealGoodSprite,
-                ItemType.MealBad  => mealBadSprite,
-                ItemType.Rose     => roseSprite,
-                ItemType.Ticket   => ticketSprite,
-                ItemType.Garlic   => garlicSprite,
-                _                 => null
+                ItemType.MealGood  => mealGoodSprite,
+                ItemType.MealBad   => mealBadSprite,
+                ItemType.MealGood2 => mealGood2Sprite,
+                ItemType.MealBad2  => mealBad2Sprite,
+                ItemType.Rose      => roseSprite,
+                ItemType.Ticket    => ticketSprite,
+                ItemType.Garlic    => garlicSprite,
+                _                  => null
             };
             if (icon != null) AddSlot(item.type, icon, item.quantity);
         }

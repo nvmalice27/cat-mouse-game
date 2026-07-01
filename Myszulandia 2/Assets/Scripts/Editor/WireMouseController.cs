@@ -6,14 +6,14 @@ public static class WireMouseController
 {
     static readonly string[] GameScenes = { "Room", "Bathroom", "Kitchen" };
 
-    // Same order as CollectibleIndex in MouseStateManager (indices 0–26)
+    // Same order as CollectibleIndex in MouseStateManager (indices 0–27)
     static readonly string[] TypeNames = {
         "Heppi", "Czonstkujaca", "Grobol", "Obrazona", "Paczurowa",
         "Smrodliwa", "Makapaka", "Pirat", "Niewyspana", "WesolaPoPobudce",
         "Myszkujaca", "Tanczaca", "Pachnaca", "Czonstkowa", "Pumpuzka",
         "Roztopiona", "Spankowa", "Czosnkowa", "Zakochana", "Rozochocona",
         "Glodna", "Chcaca", "Smutna", "Zrozpaczona", "Zlowroga",
-        "Sciekla", "ScieklaII"
+        "Sciekla", "ScieklaII", "Krowka"
     };
 
     [MenuItem("CatMouse/Wire MouseController sprites (all game scenes)")]

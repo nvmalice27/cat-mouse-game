@@ -36,6 +36,20 @@ public class PhoneUI : MonoBehaviour
         Close();
     }
 
+    public void OrderGoodFood2()
+    {
+        if (!EconomyManager.Instance.TrySpend(50)) return;
+        InventoryManager.Instance.AddMeal2(true);
+        Close();
+    }
+
+    public void OrderBadFood2()
+    {
+        if (!EconomyManager.Instance.TrySpend(50)) return;
+        InventoryManager.Instance.AddMeal2(false);
+        Close();
+    }
+
     public void OrderRose()
     {
         if (!EconomyManager.Instance.TrySpend(40)) return;

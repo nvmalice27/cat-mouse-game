@@ -40,7 +40,8 @@ public class MouseStateManager : MonoBehaviour
     float _attentionCooldown;
     float _dirtCooldown;
     bool  _running = true;
-    int   _cowComboStep;
+    bool  _cowEarsUsed;
+    bool  _cowUsed;
     ChcacaRequest _chcacaRequest;
 
     void Awake()
@@ -181,6 +182,13 @@ public class MouseStateManager : MonoBehaviour
         // Złe stany
         if (IsBadState(_state))
         {
+            if (_state == MouseState.ScieklaII)
+            {
+                // Inaktywność minuty → koniec gry
+                _inactivityTimer += dt;
+                if (_inactivityTimer >= InactivityTimeout) TriggerGameOver();
+                return;
+            }
             _badStateTimer += dt;
             if (_badStateTimer >= BadStateTimeout)
             {
@@ -243,11 +251,11 @@ public class MouseStateManager : MonoBehaviour
         _inactivityTimer  = 0f;
         _collectibleTimer = 0f;
         TryUnlock(bad);
-        if (bad == MouseState.ScieklaII) TriggerGameOver();
     }
 
     void AdvanceBadState()
     {
+        if (_state == MouseState.ScieklaII) { TriggerGameOver(); return; }
         MouseState next = _state switch
         {
             MouseState.Smutna      => MouseState.Zrozpaczona,
@@ -267,6 +275,7 @@ public class MouseStateManager : MonoBehaviour
             MouseState.Zrozpaczona => MouseState.Smutna,
             MouseState.Zlowroga    => MouseState.Zrozpaczona,
             MouseState.Sciekla     => MouseState.Zlowroga,
+            MouseState.ScieklaII   => MouseState.Sciekla,
             _                      => MouseState.Normal
         };
         SetState(prev);
@@ -340,7 +349,6 @@ public class MouseStateManager : MonoBehaviour
     {
         _running = false;
         GameEvents.RaiseGameOver();
-        GameEvents.RaiseCutsceneRequested("GameOver");
     }
 
     void OnActivity() => _inactivityTimer = 0f;
@@ -675,15 +683,16 @@ public class MouseStateManager : MonoBehaviour
         EnterCollectible(s);
     }
 
-    public void TriggerCowItem()
+    public void TriggerCowItem(bool isCowEars)
     {
         OnActivity();
-        if (IsBlocked() || HandleGrace() || IsBadState(_state)) { _cowComboStep = 0; return; }
-        if (HandleRozochwana()) { _cowComboStep = 0; return; }
-        if (IsNeedState(_state)) { _cowComboStep = 0; return; }
-        _cowComboStep++;
-        if (_cowComboStep >= 2) { _cowComboStep = 0; EnterCollectible(MouseState.Krowka); }
+        if (IsBlocked() || HandleGrace() || IsBadState(_state)) { ClearCowCombo(); return; }
+        if (HandleRozochwana()) { ClearCowCombo(); return; }
+        if (IsNeedState(_state)) { ClearCowCombo(); return; }
+        if (isCowEars) _cowEarsUsed = true;
+        else           _cowUsed     = true;
+        if (_cowEarsUsed && _cowUsed) { ClearCowCombo(); EnterCollectible(MouseState.Krowka); }
     }
 
-    void ClearCowCombo() => _cowComboStep = 0;
+    void ClearCowCombo() { _cowEarsUsed = false; _cowUsed = false; }
 }

@@ -22,8 +22,7 @@ public class GameManager : MonoBehaviour
         if (DayNightManager.Instance == null)   gameObject.AddComponent<DayNightManager>();
     }
 
-    void Start() => GameEvents.OnGameOver += OnGameOver;
-    void OnDestroy() => GameEvents.OnGameOver -= OnGameOver;
+    void OnDestroy() { }
 
     public void StartNewGame()
     {
@@ -46,8 +45,6 @@ public class GameManager : MonoBehaviour
         InventoryManager.Instance.ApplySaveData(data);
         DayNightManager.Instance.ApplySaveData(data);
     }
-
-    void OnGameOver() => DayNightManager.Instance.ResetDay();
 
     public void NavigateTo(string sceneName) => SceneManager.LoadScene(sceneName);
 

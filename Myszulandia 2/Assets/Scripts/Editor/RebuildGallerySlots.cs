@@ -7,23 +7,19 @@ using TMPro;
 
 public static class RebuildGallerySlots
 {
-    // 28 slots, 3 cols × ceil(28/3)=10 rows — matches CollectibleIndex size
+    // 28 slots, 4 cols × 7 rows
     const int TotalSlots    = 28;
-    const int Cols          = 3;
+    const int Cols          = 4;
 
-    // Slot dimensions tuned so 9 rows fit in a 1920×1080 canvas without scrolling.
-    // Available viewport height ≈ 950px (canvas 1080 − top offset 100 − bottom 30).
-    // 9 rows × 90 + 8 gaps × 10 + padding 40 = 930 ≤ 950 ✓
-    const float SlotW       = 560f;
-    const float SlotH       = 90f;
-    const float SpacingX    = 10f;
-    const float SpacingY    = 10f;
-    const float PadSide     = 80f;   // wide side padding centres 3 cols in 1860px
+    // Slot: 440×200px, 4 cols fill 1920px canvas minus 60px margins and 3×20px gaps
+    const float SlotW       = 440f;
+    const float SlotH       = 200f;
+    const float SpacingX    = 20f;
+    const float SpacingY    = 20f;
+    const float PadSide     = 20f;
     const float PadVert     = 20f;
     static readonly float ContentH =
-        ((TotalSlots + Cols - 1) / Cols) * SlotH +
-        (((TotalSlots + Cols - 1) / Cols) - 1) * SpacingY +
-        PadVert * 2;
+        7 * SlotH + 6 * SpacingY + PadVert * 2;   // 1560px
 
     [MenuItem("CatMouse/Rebuild Gallery Slots (Gallery scene)")]
     public static void Rebuild()
@@ -76,6 +72,10 @@ public static class RebuildGallerySlots
 
         var lockedSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Placeholders/gallery_locked.png");
 
+        // Ustaw scroll sensitivity na ScrollRect jeśli istnieje
+        var scrollRect = contentGO.GetComponentInParent<ScrollRect>();
+        if (scrollRect != null) scrollRect.scrollSensitivity = 40f;
+
         var slotComponents = new GallerySlot[TotalSlots];
         for (int i = 0; i < TotalSlots; i++)
         {
@@ -84,18 +84,18 @@ public static class RebuildGallerySlots
             var slotImg = slotGO.AddComponent<Image>();
             slotImg.color = new Color(0.15f, 0.12f, 0.22f, 0.95f);
 
-            // Small mouse image — left strip (0–18% width, 10–90% height)
+            // Grafika myszy — górne 55% slotu
             var mouseImgGO = new GameObject("MouseImage");
             mouseImgGO.transform.SetParent(slotGO.transform, false);
             var mouseImgRT       = mouseImgGO.AddComponent<RectTransform>();
-            mouseImgRT.anchorMin = new Vector2(0.01f, 0.10f);
-            mouseImgRT.anchorMax = new Vector2(0.17f, 0.90f);
+            mouseImgRT.anchorMin = new Vector2(0.10f, 0.40f);
+            mouseImgRT.anchorMax = new Vector2(0.90f, 0.95f);
             mouseImgRT.offsetMin = Vector2.zero;
             mouseImgRT.offsetMax = Vector2.zero;
             var mouseImg = mouseImgGO.AddComponent<Image>();
             mouseImg.preserveAspect = true;
 
-            // Locked overlay — full slot
+            // Nakładka zablokowania — cały slot
             var overlayGO  = new GameObject("LockedOverlay");
             overlayGO.transform.SetParent(slotGO.transform, false);
             var overlayRT  = overlayGO.AddComponent<RectTransform>();
@@ -104,37 +104,37 @@ public static class RebuildGallerySlots
             overlayRT.offsetMin = Vector2.zero;
             overlayRT.offsetMax = Vector2.zero;
             var overlayImg = overlayGO.AddComponent<Image>();
-            overlayImg.color = new Color(0f, 0f, 0f, 0.60f);
+            overlayImg.color = new Color(0f, 0f, 0f, 0.70f);
             if (lockedSprite != null) overlayImg.sprite = lockedSprite;
 
-            // Name text — right 82%, upper 55%
+            // Nazwa — środkowe 20% (35–55%)
             var nameGO = new GameObject("NameText");
             nameGO.transform.SetParent(slotGO.transform, false);
             var nameRT       = nameGO.AddComponent<RectTransform>();
-            nameRT.anchorMin = new Vector2(0.19f, 0.45f);
-            nameRT.anchorMax = new Vector2(1.00f, 1.00f);
-            nameRT.offsetMin = new Vector2(4, 0);
-            nameRT.offsetMax = new Vector2(-4, -2);
+            nameRT.anchorMin = new Vector2(0f, 0.22f);
+            nameRT.anchorMax = new Vector2(1f, 0.42f);
+            nameRT.offsetMin = new Vector2(6, 0);
+            nameRT.offsetMax = new Vector2(-6, 0);
             var nameTMP      = nameGO.AddComponent<TextMeshProUGUI>();
             nameTMP.text      = "???";
-            nameTMP.fontSize  = 13;
+            nameTMP.fontSize  = 15;
             nameTMP.fontStyle = FontStyles.Bold;
             nameTMP.color     = Color.white;
-            nameTMP.alignment = TextAlignmentOptions.MidlineLeft;
+            nameTMP.alignment = TextAlignmentOptions.Center;
 
-            // Hint text — right 82%, lower 45%
+            // Podpowiedź — dolne 22%
             var hintGO = new GameObject("HintText");
             hintGO.transform.SetParent(slotGO.transform, false);
             var hintRT       = hintGO.AddComponent<RectTransform>();
-            hintRT.anchorMin = new Vector2(0.19f, 0.00f);
-            hintRT.anchorMax = new Vector2(1.00f, 0.48f);
-            hintRT.offsetMin = new Vector2(4, 2);
-            hintRT.offsetMax = new Vector2(-4, 0);
+            hintRT.anchorMin = new Vector2(0f, 0.01f);
+            hintRT.anchorMax = new Vector2(1f, 0.22f);
+            hintRT.offsetMin = new Vector2(6, 0);
+            hintRT.offsetMax = new Vector2(-6, 0);
             var hintTMP      = hintGO.AddComponent<TextMeshProUGUI>();
             hintTMP.text      = "";
-            hintTMP.fontSize  = 10;
+            hintTMP.fontSize  = 11;
             hintTMP.color     = new Color(0.78f, 0.78f, 0.78f);
-            hintTMP.alignment = TextAlignmentOptions.MidlineLeft;
+            hintTMP.alignment = TextAlignmentOptions.Center;
 
             var slot = slotGO.AddComponent<GallerySlot>();
             SetRef(slot, "mouseImage",    mouseImg);

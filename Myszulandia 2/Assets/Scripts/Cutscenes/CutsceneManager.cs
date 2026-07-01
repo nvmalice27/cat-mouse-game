@@ -46,8 +46,6 @@ public class CutsceneManager : MonoBehaviour
     {
         if (_currentKey == "Night" || _currentKey == "NightMakapaka")
             DayNightManager.Instance.OnNightCutsceneComplete();
-        else if (_currentKey == "GameOver")
-            DayNightManager.Instance.ResetDay();
         _currentKey = null;
     }
 

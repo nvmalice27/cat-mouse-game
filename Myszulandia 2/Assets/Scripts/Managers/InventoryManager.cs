@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic, Drink, MouseBall, CowEars, Cow }
+public enum ItemType { Crumb, Sock, MealGood, MealBad, Rose, Ticket, Garlic, Drink, MouseBall, CowEars, Cow, MealGood2, MealBad2 }
 
 [System.Serializable]
 public class InventoryItem
@@ -96,13 +96,22 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    public void AddMeal(bool isGood) => AddItem(isGood ? ItemType.MealGood : ItemType.MealBad);
-    public void AddRose()            => AddItem(ItemType.Rose);
-    public void AddTicket()          => AddItem(ItemType.Ticket);
+    public void AddMeal(bool isGood)  => AddItem(isGood ? ItemType.MealGood  : ItemType.MealBad);
+    public void AddMeal2(bool isGood) => AddItem(isGood ? ItemType.MealGood2 : ItemType.MealBad2);
+    public void AddRose()             => AddItem(ItemType.Rose);
+    public void AddTicket()           => AddItem(ItemType.Ticket);
 
     public bool TryUseMealOnMouse(bool isGood)
     {
         ItemType t = isGood ? ItemType.MealGood : ItemType.MealBad;
+        if (!RemoveItem(t)) return false;
+        MouseStateManager.Instance.Feed(isGood);
+        return true;
+    }
+
+    public bool TryUseMeal2OnMouse(bool isGood)
+    {
+        ItemType t = isGood ? ItemType.MealGood2 : ItemType.MealBad2;
         if (!RemoveItem(t)) return false;
         MouseStateManager.Instance.Feed(isGood);
         return true;
@@ -159,7 +168,7 @@ public class InventoryManager : MonoBehaviour
         if (_cowEarsInInventory <= 0) return false;
         _cowEarsInInventory--;
         GameEvents.RaiseInventoryChanged();
-        MouseStateManager.Instance.TriggerCowItem();
+        MouseStateManager.Instance.TriggerCowItem(isCowEars: true);
         return true;
     }
 
@@ -168,7 +177,7 @@ public class InventoryManager : MonoBehaviour
         if (_cowInInventory <= 0) return false;
         _cowInInventory--;
         GameEvents.RaiseInventoryChanged();
-        MouseStateManager.Instance.TriggerCowItem();
+        MouseStateManager.Instance.TriggerCowItem(isCowEars: false);
         return true;
     }
 
