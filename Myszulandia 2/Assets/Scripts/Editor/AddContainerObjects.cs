@@ -57,6 +57,36 @@ public static class AddContainerObjects
         Debug.Log("Lodowka dodana. Uruchom teraz 'Setup Fridge Contents' zeby podpiac skladniki.");
     }
 
+    // Uruchom mając otwartą scenę Room — podpina Sock_3 i Crumb_2 do kontenerów
+    [MenuItem("CatMouse/Setup Room Container Contents")]
+    public static void SetupRoomContents()
+    {
+        // ── Szuflada → Sock_3 ─────────────────────────────────────────────────
+        var drawerGO = GameObject.Find("Szuflada");
+        if (drawerGO == null) { Debug.LogError("Nie znaleziono 'Szuflada' — uruchom najpierw Add Containers - Room."); return; }
+
+        RemovePlaceholderChild(drawerGO, "Sock_Hidden");
+
+        var sock3 = GameObject.Find("Sock_3");
+        if (sock3 == null) Debug.LogWarning("Nie znaleziono 'Sock_3' w scenie.");
+        Reparent(sock3, drawerGO.transform);
+        WireHiddenObjects(drawerGO.GetComponent<ContainerObject>(), BuildArray(sock3));
+
+        // ── Koldra → Crumb_2 ──────────────────────────────────────────────────
+        var blanketGO = GameObject.Find("Koldra");
+        if (blanketGO == null) { Debug.LogError("Nie znaleziono 'Koldra' — uruchom najpierw Add Containers - Room."); return; }
+
+        RemovePlaceholderChild(blanketGO, "Hidden_Item");
+
+        var crumb2 = GameObject.Find("Crumb_2");
+        if (crumb2 == null) Debug.LogWarning("Nie znaleziono 'Crumb_2' w scenie.");
+        Reparent(crumb2, blanketGO.transform);
+        WireHiddenObjects(blanketGO.GetComponent<ContainerObject>(), BuildArray(crumb2));
+
+        SaveScene();
+        Debug.Log("Sock_3 schowana w Szufladzie, Crumb_2 schowany pod Koldrą!");
+    }
+
     // Uruchom mając otwartą scenę Kitchen — podpina istniejące obiekty do lodówki
     [MenuItem("CatMouse/Setup Fridge Contents (Kitchen)")]
     public static void SetupFridgeContents()
@@ -118,6 +148,12 @@ public static class AddContainerObjects
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────
+
+    static void RemovePlaceholderChild(GameObject parent, string childName)
+    {
+        var child = parent.transform.Find(childName);
+        if (child != null) Object.DestroyImmediate(child.gameObject);
+    }
 
     static void Reparent(GameObject go, Transform newParent)
     {
